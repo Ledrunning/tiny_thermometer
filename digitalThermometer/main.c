@@ -22,7 +22,7 @@
 #define DEC 10
 #define DOZEN 10
 
-uint8_t data=0,lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
+uint8_t c=0,lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
 
 void print_humidity(char* buffer);
@@ -52,8 +52,6 @@ int main(void) {
 		lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
 		highByteTemp=receive_data();	/* store next eight bit in D_Temp */
 		checkSum=receive_data();/* store next eight bit in CheckSum */
-		print_humidity(buffer);
-
 		
 		if (get_checksum() != checkSum)
 		{
@@ -94,6 +92,11 @@ void print_temperature(char* buffer, uint16_t temp_after_point)
 	lcdGotoXY(1,2);
 	itoa(temperatureResult, buffer, DEC);
 	lcdPuts(buffer);
+	lcdGotoXY(1,4);
+	lcdPuts(".");
+	lcdGotoXY(1,5);	
+	itoa(temp_after_point, buffer, DEC);
+	lcdPuts(buffer);
 	lcdGotoXY(1,6);
 	lcdPuts("C");
 }
@@ -106,7 +109,7 @@ void request()                /* Microcontroller send start pulse/request */
 	PORTD |= (1<<DHT22_PIN);	/* set to high pin */
 }
 
-void response()				/* receive response from DHT22 */
+void response()				/* receive response from DHT11 */
 {
 	DDRD &= ~(1<<DHT22_PIN);
 	while(PIND & (1<<DHT22_PIN));
@@ -116,18 +119,18 @@ void response()				/* receive response from DHT22 */
 
 uint8_t receive_data()			/* receive data */
 {
-	int i;
-	for (i=0; i<8; i++)
+	int q;
+	for (q=0; q<8; q++)
 	{
 		while((PIND & (1<<DHT22_PIN)) == 0);  /* check received bit 0 or 1 */
 		_delay_us(30);
 		if(PIND & (1<<DHT22_PIN))/* if high pulse is greater than 30ms */
-		data = (data<<1)|(0x01);	/* then its logic HIGH */
+		c = (c<<1)|(0x01);	/* then its logic HIGH */
 		else			/* otherwise its logic LOW */
-		data = (data<<1);
+		c = (c<<1);
 		while(PIND & (1<<DHT22_PIN));
 	}
-	return data;
+	return c;
 }
 
 int get_checksum(){
