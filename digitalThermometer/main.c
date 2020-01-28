@@ -28,6 +28,7 @@ void response();				/* receive response from DHT11 */
 uint8_t receive_data();			/* receive data */
 int get_checksum();
 
+//if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
 int main(void) {
 	
 	char buffer[STRING_SIZE];
