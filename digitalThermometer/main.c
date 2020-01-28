@@ -30,6 +30,9 @@ int get_checksum();
 
 // if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
 // Маски достаточно, но нужна маска & 0x7F чтобы знаковый бит обнулить
+//Ну или тупо 
+//if (temp > 0x7FFF)
+//  Signtemp = -(0x7FFF & temp)
 int main(void) {
 	
 	char buffer[STRING_SIZE];
