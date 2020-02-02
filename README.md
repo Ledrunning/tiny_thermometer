@@ -1,5 +1,5 @@
 # Tiny termometer
-## A simple temperature and humidity meter with display values on 8x2 LCD
+## A simple temperature and humidity meter displaying values on 8x2 LCD
 ## On small avr microcontroller Attiny 2313
 ## Program written on C language in Atmel Studio 7
 
