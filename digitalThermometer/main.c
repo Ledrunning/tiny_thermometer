@@ -22,18 +22,21 @@
 #define DEC 10
 #define DOZEN 10
 #define TEMP_MASK 0x7FFF
+#define MINIMUM_TEMP -40
+#define MAXIMUM_TEMP 80
 
-uint8_t c=0,lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
+uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
-const int negativePointShift = -10;
+const int NEGATIVE_POINT = -10;
 
-void print_negative_temperature(char* tBuffer, int negativeTemp);
-void print_humidity(char* buffer);
-void print_temperature(char* buffer, uint16_t temp_after_point);
-void request();                /* Microcontroller send start pulse/request */
-void response();				/* receive response from DHT11 */
-uint8_t receive_data();			/* receive data */
+void print_negative_temperature(char* tBuffer, int negativeTemp); /* print temperature lower than 0 C */
+void print_humidity(char* buffer);								  /* print humidity */
+void print_temperature(char* buffer, uint16_t temp_after_point);  /* print temperature above than 0 C */
+void request();													  /* Microcontroller send start pulse/request */
+void response();												  /* receive response from DHT11 */
+uint8_t receive_data();											  /* receive data */
 int get_checksum();
+void print_error();
 
 int main(void) {
 	
@@ -66,26 +69,19 @@ int main(void) {
 		checkSum=receive_data();/* store next eight bit in CheckSum */
 		
 		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
-		if ((get_checksum() & 255) != checkSum)
-		{
-			lcdGotoXY(0,0);
-			lcdPuts("Sens    ");
-			lcdGotoXY(1,0);
-			lcdPuts("Err     ");
+		if ((get_checksum() & 255) != checkSum) {
+			print_error();
 		}
-		else
-		{
+		else {
 			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
 			print_humidity(hBuffer);
-			
 			temperatureResult = (lowByteTemp * 256 + highByteTemp );
 			
-			if(temperatureResult > TEMP_MASK)
-			{
-				negativeTemp = -(TEMP_MASK & temperatureResult);
+			if(temperatureResult > TEMP_MASK) {
+				negativeTemp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
 				print_negative_temperature(tBuffer, negativeTemp);
 			}
-			else{
+			else {
 				temp_buffer = temperatureResult;
 				temp_buffer_after_point = temp_buffer % DOZEN;
 				print_temperature(tBuffer, temp_buffer_after_point);
@@ -98,75 +94,118 @@ int main(void) {
 
 void print_humidity(char* buffer)
 {
-	lcdGotoXY(0,0);
-	lcdPuts("H=");
-	lcdGotoXY(0,2);
-	itoa(humidityResult, buffer, DOZEN);
-	lcdPuts(buffer);
-	lcdGotoXY(0, 5);
-	lcdPuts("%");
+	if(humidityResult < 100) {
+		lcdGotoXY(0,0);
+		lcdPuts("H= ");
+		lcdGotoXY(0,3);
+		itoa(humidityResult, buffer, DOZEN);
+		lcdPuts(buffer);
+		lcdGotoXY(0, 5);
+		lcdPuts("%");
+	}
+	else {
+		lcdGotoXY(0,0);
+		lcdPuts("H=");
+		lcdGotoXY(0,2);
+		itoa(humidityResult, buffer, DOZEN);
+		lcdPuts(buffer);
+		lcdGotoXY(0, 5);
+		lcdPuts("%");
+	}
 }
 
-void print_negative_temperature(char* buffer, int negativeTemp){
+void print_negative_temperature(char* buffer, int negativeTemp) {
+
+	uint16_t negativeData = negativeTemp/DEC;
 	
-	if(negativeTemp < negativePointShift) {
-		lcdGotoXY(1,0);
-		lcdPuts("T=");
-		lcdGotoXY(1,2);
-		itoa(negativeTemp/DEC, buffer, DEC);
-		lcdPuts(buffer);
-		lcdGotoXY(1,4);
-		lcdPuts("C");
+	if((abs(negativeTemp) != abs(MINIMUM_TEMP))) {
+		if(abs(negativeData) < abs(NEGATIVE_POINT)) {
+			lcdGotoXY(1,0);
+			lcdPuts("T= ");
+			lcdGotoXY(1,3);
+			itoa(negativeData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,5);
+			lcdPuts(" ");
+			lcdGotoXY(1,6);
+			lcdPuts("C ");
+		}
+		else {
+			lcdGotoXY(1,0);
+			lcdPuts("T=");
+			lcdGotoXY(1,2);
+			itoa(negativeData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,5);
+			lcdPuts("C ");
+		}
 	}
-	else{
-		lcdGotoXY(1,0);
-		lcdPuts("T=");
-		lcdGotoXY(1,2);
-		itoa(negativeTemp/DEC, buffer, DEC);
-		lcdPuts(buffer);
-		lcdGotoXY(1,5);
-		lcdPuts("C");
+	else {
+		print_error();
 	}
-	
 }
 
 void print_temperature(char* buffer, uint16_t temp_after_point)
 {
-	lcdGotoXY(1,0);
-	lcdPuts("T=");
-	lcdGotoXY(1,2);
-	itoa(temperatureResult, buffer, DEC);
-	lcdPuts(buffer);
-	lcdGotoXY(1,4);
-	lcdPuts(".");
-	lcdGotoXY(1,5);
-	itoa(temp_after_point, buffer, DEC);
-	lcdPuts(buffer);
-	lcdGotoXY(1,6);
-	lcdPuts("C");
+	uint16_t temperatureData = temperatureResult / DOZEN;
+	
+	if(temperatureData != MAXIMUM_TEMP) {
+		
+		if(temperatureData < DEC) {
+			lcdGotoXY(1,0);
+			lcdPuts("T= ");
+			lcdGotoXY(1,3);
+			itoa(temperatureData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,4);
+			lcdPuts(".");
+			lcdGotoXY(1,5);
+			itoa(temp_after_point, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,6);
+			lcdPuts("C");
+		}
+		else {
+			lcdGotoXY(1,0);
+			lcdPuts("T=");
+			lcdGotoXY(1,2);
+			itoa(temperatureData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,4);
+			lcdPuts(".");
+			lcdGotoXY(1,5);
+			itoa(temp_after_point, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,6);
+			lcdPuts("C");
+		}
+	}
+	else {
+		print_error();
+	}
+	
 }
 
-void request()                /* Microcontroller send start pulse/request */
-{
+void request()  {
+	
 	DDRD |= (1<<DHT22_PIN);
 	PORTD &= ~(1<<DHT22_PIN);    /* set to low pin */
 	_delay_ms(20);            /* wait for 20ms */
 	PORTD |= (1<<DHT22_PIN);	/* set to high pin */
 }
 
-void response()				/* receive response from DHT11 */
-{
+void response()	{
+	
 	DDRD &= ~(1<<DHT22_PIN);
 	while(PIND & (1<<DHT22_PIN));
 	while((PIND & (1<<DHT22_PIN))==0);
 	while(PIND & (1<<DHT22_PIN));
 }
 
-uint8_t receive_data()			/* receive data */
-{
+uint8_t receive_data() {
+	
 	int q;
-	for (q=0; q<8; q++)
-	{
+	for (q=0; q<8; q++)	{
 		while((PIND & (1<<DHT22_PIN)) == 0);  /* check received bit 0 or 1 */
 		_delay_us(30);
 		if(PIND & (1<<DHT22_PIN))/* if high pulse is greater than 30ms */
@@ -178,7 +217,14 @@ uint8_t receive_data()			/* receive data */
 	return c;
 }
 
-int get_checksum(){
+int get_checksum() {
 	
 	return lowByteRh + highByteRh + lowByteTemp + highByteTemp;
+}
+
+void print_error() {
+	lcdGotoXY(0,0);
+	lcdPuts("Sens    ");
+	lcdGotoXY(1,0);
+	lcdPuts("Err     ");
 }
