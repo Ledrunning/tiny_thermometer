@@ -38,6 +38,11 @@ uint8_t receive_data();											  /* receive data */
 int get_checksum();
 void print_error();
 
+// if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
+// Маски достаточно, но нужна маска & 0x7F чтобы знаковый бит обнулить
+//Ну или тупо 
+//if (temp > 0x7FFF)
+//  Signtemp = -(0x7FFF & temp)
 int main(void) {
 	
 	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
