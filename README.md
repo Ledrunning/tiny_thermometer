@@ -5,3 +5,5 @@
 
 * Repository contains project in Atmel Studio 7 with source code 
 * Simulation project in Proteus 8
+
+![](name-of-sim.gif)
