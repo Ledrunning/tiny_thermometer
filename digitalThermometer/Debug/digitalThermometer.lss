@@ -3,31 +3,31 @@ digitalThermometer.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000406  00000000  00000000  00000094  2**1
+  0 .text         000005d4  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000010  00800060  00000406  0000049a  2**0
+  1 .data         0000002a  00800060  000005d4  00000668  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000000a  00800070  00800070  000004aa  2**0
+  2 .bss          0000000a  0080008a  0080008a  00000692  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000004aa  2**0
+  3 .comment      00000030  00000000  00000000  00000692  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000004dc  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000006c4  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 000000f0  00000000  00000000  0000051c  2**0
+  5 .debug_aranges 00000110  00000000  00000000  00000704  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00001a58  00000000  00000000  0000060c  2**0
+  6 .debug_info   0000208d  00000000  00000000  00000814  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000008b7  00000000  00000000  00002064  2**0
+  7 .debug_abbrev 00000903  00000000  00000000  000028a1  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000a12  00000000  00000000  0000291b  2**0
+  8 .debug_line   00000bb0  00000000  00000000  000031a4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000250  00000000  00000000  00003330  2**2
+  9 .debug_frame  000002d0  00000000  00000000  00003d54  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000050f  00000000  00000000  00003580  2**0
+ 10 .debug_str    000005b1  00000000  00000000  00004024  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000010c9  00000000  00000000  00003a8f  2**0
+ 11 .debug_loc    000013bb  00000000  00000000  000045d5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000e8  00000000  00000000  00004b58  2**0
+ 12 .debug_ranges 00000108  00000000  00000000  00005990  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -65,18 +65,18 @@ Disassembly of section .text:
   32:	10 e0       	ldi	r17, 0x00	; 0
   34:	a0 e6       	ldi	r26, 0x60	; 96
   36:	b0 e0       	ldi	r27, 0x00	; 0
-  38:	e6 e0       	ldi	r30, 0x06	; 6
-  3a:	f4 e0       	ldi	r31, 0x04	; 4
+  38:	e4 ed       	ldi	r30, 0xD4	; 212
+  3a:	f5 e0       	ldi	r31, 0x05	; 5
   3c:	02 c0       	rjmp	.+4      	; 0x42 <__SREG__+0x3>
   3e:	05 90       	lpm	r0, Z+
   40:	0d 92       	st	X+, r0
-  42:	a0 37       	cpi	r26, 0x70	; 112
+  42:	aa 38       	cpi	r26, 0x8A	; 138
   44:	b1 07       	cpc	r27, r17
   46:	d9 f7       	brne	.-10     	; 0x3e <__SP_L__+0x1>
 
 00000048 <__do_clear_bss>:
   48:	20 e0       	ldi	r18, 0x00	; 0
-  4a:	a0 e7       	ldi	r26, 0x70	; 112
+  4a:	aa e8       	ldi	r26, 0x8A	; 138
   4c:	b0 e0       	ldi	r27, 0x00	; 0
   4e:	01 c0       	rjmp	.+2      	; 0x52 <.do_clear_bss_start>
 
@@ -84,11 +84,11 @@ Disassembly of section .text:
   50:	1d 92       	st	X+, r1
 
 00000052 <.do_clear_bss_start>:
-  52:	aa 37       	cpi	r26, 0x7A	; 122
+  52:	a4 39       	cpi	r26, 0x94	; 148
   54:	b2 07       	cpc	r27, r18
   56:	e1 f7       	brne	.-8      	; 0x50 <.do_clear_bss_loop>
-  58:	df d0       	rcall	.+446    	; 0x218 <main>
-  5a:	d3 c1       	rjmp	.+934    	; 0x402 <_exit>
+  58:	f1 d1       	rcall	.+994    	; 0x43c <main>
+  5a:	ba c2       	rjmp	.+1396   	; 0x5d0 <_exit>
 
 0000005c <__bad_interrupt>:
   5c:	d1 cf       	rjmp	.-94     	; 0x0 <__vectors>
@@ -297,448 +297,798 @@ void lcdPuts(char *str) {
  192:	cf 91       	pop	r28
  194:	08 95       	ret
 
-00000196 <request>:
+00000196 <print_humidity>:
+		_delay_ms(1000);
 	}
+}
+
+void print_humidity(char* buffer)
+{
+ 196:	cf 93       	push	r28
+ 198:	df 93       	push	r29
+ 19a:	ec 01       	movw	r28, r24
+	if(humidityResult < 100)
+ 19c:	80 91 92 00 	lds	r24, 0x0092	; 0x800092 <humidityResult>
+ 1a0:	90 91 93 00 	lds	r25, 0x0093	; 0x800093 <humidityResult+0x1>
+ 1a4:	84 36       	cpi	r24, 0x64	; 100
+ 1a6:	91 05       	cpc	r25, r1
+ 1a8:	d0 f4       	brcc	.+52     	; 0x1de <print_humidity+0x48>
+	{
+	lcdGotoXY(0,0);
+ 1aa:	60 e0       	ldi	r22, 0x00	; 0
+ 1ac:	80 e0       	ldi	r24, 0x00	; 0
+ 1ae:	ce df       	rcall	.-100    	; 0x14c <lcdGotoXY>
+	lcdPuts("H= ");
+ 1b0:	80 e6       	ldi	r24, 0x60	; 96
+ 1b2:	90 e0       	ldi	r25, 0x00	; 0
+ 1b4:	da df       	rcall	.-76     	; 0x16a <lcdPuts>
+	lcdGotoXY(0,3);
+ 1b6:	63 e0       	ldi	r22, 0x03	; 3
+ 1b8:	80 e0       	ldi	r24, 0x00	; 0
+ 1ba:	c8 df       	rcall	.-112    	; 0x14c <lcdGotoXY>
+	itoa(humidityResult, buffer, DOZEN);
+ 1bc:	4a e0       	ldi	r20, 0x0A	; 10
+ 1be:	50 e0       	ldi	r21, 0x00	; 0
+ 1c0:	be 01       	movw	r22, r28
+ 1c2:	80 91 92 00 	lds	r24, 0x0092	; 0x800092 <humidityResult>
+ 1c6:	90 91 93 00 	lds	r25, 0x0093	; 0x800093 <humidityResult+0x1>
+ 1ca:	c5 d1       	rcall	.+906    	; 0x556 <itoa>
+	lcdPuts(buffer);
+ 1cc:	ce 01       	movw	r24, r28
+ 1ce:	cd df       	rcall	.-102    	; 0x16a <lcdPuts>
+	lcdGotoXY(0, 5);
+ 1d0:	65 e0       	ldi	r22, 0x05	; 5
+ 1d2:	80 e0       	ldi	r24, 0x00	; 0
+ 1d4:	bb df       	rcall	.-138    	; 0x14c <lcdGotoXY>
+	lcdPuts("%");	
+ 1d6:	84 e6       	ldi	r24, 0x64	; 100
+ 1d8:	90 e0       	ldi	r25, 0x00	; 0
+ 1da:	c7 df       	rcall	.-114    	; 0x16a <lcdPuts>
+ 1dc:	19 c0       	rjmp	.+50     	; 0x210 <print_humidity+0x7a>
+	}
+	else
+	{
+		lcdGotoXY(0,0);
+ 1de:	60 e0       	ldi	r22, 0x00	; 0
+ 1e0:	80 e0       	ldi	r24, 0x00	; 0
+ 1e2:	b4 df       	rcall	.-152    	; 0x14c <lcdGotoXY>
+		lcdPuts("H=");
+ 1e4:	86 e6       	ldi	r24, 0x66	; 102
+ 1e6:	90 e0       	ldi	r25, 0x00	; 0
+ 1e8:	c0 df       	rcall	.-128    	; 0x16a <lcdPuts>
+		lcdGotoXY(0,2);
+ 1ea:	62 e0       	ldi	r22, 0x02	; 2
+ 1ec:	80 e0       	ldi	r24, 0x00	; 0
+ 1ee:	ae df       	rcall	.-164    	; 0x14c <lcdGotoXY>
+		itoa(humidityResult, buffer, DOZEN);
+ 1f0:	4a e0       	ldi	r20, 0x0A	; 10
+ 1f2:	50 e0       	ldi	r21, 0x00	; 0
+ 1f4:	be 01       	movw	r22, r28
+ 1f6:	80 91 92 00 	lds	r24, 0x0092	; 0x800092 <humidityResult>
+ 1fa:	90 91 93 00 	lds	r25, 0x0093	; 0x800093 <humidityResult+0x1>
+ 1fe:	ab d1       	rcall	.+854    	; 0x556 <itoa>
+		lcdPuts(buffer);
+ 200:	ce 01       	movw	r24, r28
+ 202:	b3 df       	rcall	.-154    	; 0x16a <lcdPuts>
+		lcdGotoXY(0, 5);
+ 204:	65 e0       	ldi	r22, 0x05	; 5
+ 206:	80 e0       	ldi	r24, 0x00	; 0
+ 208:	a1 df       	rcall	.-190    	; 0x14c <lcdGotoXY>
+		lcdPuts("%");
+ 20a:	84 e6       	ldi	r24, 0x64	; 100
+ 20c:	90 e0       	ldi	r25, 0x00	; 0
+ 20e:	ad df       	rcall	.-166    	; 0x16a <lcdPuts>
+	}
+}
+ 210:	df 91       	pop	r29
+ 212:	cf 91       	pop	r28
+ 214:	08 95       	ret
+
+00000216 <request>:
+	
 }
 
 void request()                /* Microcontroller send start pulse/request */
 {
 	DDRD |= (1<<DHT22_PIN);
- 196:	8e 9a       	sbi	0x11, 6	; 17
+ 216:	8e 9a       	sbi	0x11, 6	; 17
 	PORTD &= ~(1<<DHT22_PIN);    /* set to low pin */
- 198:	96 98       	cbi	0x12, 6	; 18
- 19a:	2f ef       	ldi	r18, 0xFF	; 255
- 19c:	89 ef       	ldi	r24, 0xF9	; 249
- 19e:	90 e0       	ldi	r25, 0x00	; 0
- 1a0:	21 50       	subi	r18, 0x01	; 1
- 1a2:	80 40       	sbci	r24, 0x00	; 0
- 1a4:	90 40       	sbci	r25, 0x00	; 0
- 1a6:	e1 f7       	brne	.-8      	; 0x1a0 <request+0xa>
- 1a8:	00 c0       	rjmp	.+0      	; 0x1aa <request+0x14>
- 1aa:	00 00       	nop
-	_delay_ms(40);            /* wait for 20ms */
+ 218:	96 98       	cbi	0x12, 6	; 18
+ 21a:	8f e3       	ldi	r24, 0x3F	; 63
+ 21c:	9c e9       	ldi	r25, 0x9C	; 156
+ 21e:	01 97       	sbiw	r24, 0x01	; 1
+ 220:	f1 f7       	brne	.-4      	; 0x21e <request+0x8>
+ 222:	00 c0       	rjmp	.+0      	; 0x224 <request+0xe>
+ 224:	00 00       	nop
+	_delay_ms(20);            /* wait for 20ms */
 	PORTD |= (1<<DHT22_PIN);	/* set to high pin */
- 1ac:	96 9a       	sbi	0x12, 6	; 18
- 1ae:	08 95       	ret
+ 226:	96 9a       	sbi	0x12, 6	; 18
+ 228:	08 95       	ret
 
-000001b0 <response>:
+0000022a <response>:
 }
 
 void response()				/* receive response from DHT11 */
 {
 	DDRD &= ~(1<<DHT22_PIN);
- 1b0:	8e 98       	cbi	0x11, 6	; 17
+ 22a:	8e 98       	cbi	0x11, 6	; 17
 	while(PIND & (1<<DHT22_PIN));
- 1b2:	86 99       	sbic	0x10, 6	; 16
- 1b4:	fe cf       	rjmp	.-4      	; 0x1b2 <response+0x2>
+ 22c:	86 99       	sbic	0x10, 6	; 16
+ 22e:	fe cf       	rjmp	.-4      	; 0x22c <response+0x2>
 	while((PIND & (1<<DHT22_PIN))==0);
- 1b6:	86 9b       	sbis	0x10, 6	; 16
- 1b8:	fe cf       	rjmp	.-4      	; 0x1b6 <response+0x6>
+ 230:	86 9b       	sbis	0x10, 6	; 16
+ 232:	fe cf       	rjmp	.-4      	; 0x230 <response+0x6>
 	while(PIND & (1<<DHT22_PIN));
- 1ba:	86 99       	sbic	0x10, 6	; 16
- 1bc:	fe cf       	rjmp	.-4      	; 0x1ba <response+0xa>
+ 234:	86 99       	sbic	0x10, 6	; 16
+ 236:	fe cf       	rjmp	.-4      	; 0x234 <response+0xa>
 }
- 1be:	08 95       	ret
+ 238:	08 95       	ret
 
-000001c0 <receive_data>:
+0000023a <receive_data>:
 
 uint8_t receive_data()			/* receive data */
 {
- 1c0:	88 e0       	ldi	r24, 0x08	; 8
- 1c2:	90 e0       	ldi	r25, 0x00	; 0
+ 23a:	88 e0       	ldi	r24, 0x08	; 8
+ 23c:	90 e0       	ldi	r25, 0x00	; 0
 	int q;
 	for (q=0; q<8; q++)
 	{
 		while((PIND & (1<<DHT22_PIN)) == 0);  /* check received bit 0 or 1 */
- 1c4:	86 9b       	sbis	0x10, 6	; 16
- 1c6:	fe cf       	rjmp	.-4      	; 0x1c4 <receive_data+0x4>
+ 23e:	86 9b       	sbis	0x10, 6	; 16
+ 240:	fe cf       	rjmp	.-4      	; 0x23e <receive_data+0x4>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
- 1c8:	20 e5       	ldi	r18, 0x50	; 80
- 1ca:	2a 95       	dec	r18
- 1cc:	f1 f7       	brne	.-4      	; 0x1ca <receive_data+0xa>
+ 242:	20 e5       	ldi	r18, 0x50	; 80
+ 244:	2a 95       	dec	r18
+ 246:	f1 f7       	brne	.-4      	; 0x244 <receive_data+0xa>
 		_delay_us(30);
 		if(PIND & (1<<DHT22_PIN))/* if high pulse is greater than 30ms */
- 1ce:	86 9b       	sbis	0x10, 6	; 16
- 1d0:	07 c0       	rjmp	.+14     	; 0x1e0 <receive_data+0x20>
+ 248:	86 9b       	sbis	0x10, 6	; 16
+ 24a:	07 c0       	rjmp	.+14     	; 0x25a <receive_data+0x20>
 		c = (c<<1)|(0x01);	/* then its logic HIGH */
- 1d2:	20 91 70 00 	lds	r18, 0x0070	; 0x800070 <__data_end>
- 1d6:	22 0f       	add	r18, r18
- 1d8:	21 60       	ori	r18, 0x01	; 1
- 1da:	20 93 70 00 	sts	0x0070, r18	; 0x800070 <__data_end>
- 1de:	05 c0       	rjmp	.+10     	; 0x1ea <receive_data+0x2a>
+ 24c:	20 91 8a 00 	lds	r18, 0x008A	; 0x80008a <__data_end>
+ 250:	22 0f       	add	r18, r18
+ 252:	21 60       	ori	r18, 0x01	; 1
+ 254:	20 93 8a 00 	sts	0x008A, r18	; 0x80008a <__data_end>
+ 258:	05 c0       	rjmp	.+10     	; 0x264 <receive_data+0x2a>
 		else			/* otherwise its logic LOW */
 		c = (c<<1);
- 1e0:	20 91 70 00 	lds	r18, 0x0070	; 0x800070 <__data_end>
- 1e4:	22 0f       	add	r18, r18
- 1e6:	20 93 70 00 	sts	0x0070, r18	; 0x800070 <__data_end>
+ 25a:	20 91 8a 00 	lds	r18, 0x008A	; 0x80008a <__data_end>
+ 25e:	22 0f       	add	r18, r18
+ 260:	20 93 8a 00 	sts	0x008A, r18	; 0x80008a <__data_end>
 		while(PIND & (1<<DHT22_PIN));
- 1ea:	86 99       	sbic	0x10, 6	; 16
- 1ec:	fe cf       	rjmp	.-4      	; 0x1ea <receive_data+0x2a>
- 1ee:	01 97       	sbiw	r24, 0x01	; 1
+ 264:	86 99       	sbic	0x10, 6	; 16
+ 266:	fe cf       	rjmp	.-4      	; 0x264 <receive_data+0x2a>
+ 268:	01 97       	sbiw	r24, 0x01	; 1
 }
 
 uint8_t receive_data()			/* receive data */
 {
 	int q;
 	for (q=0; q<8; q++)
- 1f0:	49 f7       	brne	.-46     	; 0x1c4 <receive_data+0x4>
+ 26a:	49 f7       	brne	.-46     	; 0x23e <receive_data+0x4>
 		else			/* otherwise its logic LOW */
 		c = (c<<1);
 		while(PIND & (1<<DHT22_PIN));
 	}
 	return c;
 }
- 1f2:	80 91 70 00 	lds	r24, 0x0070	; 0x800070 <__data_end>
- 1f6:	08 95       	ret
+ 26c:	80 91 8a 00 	lds	r24, 0x008A	; 0x80008a <__data_end>
+ 270:	08 95       	ret
 
-000001f8 <get_checksum>:
+00000272 <get_checksum>:
 
 int get_checksum(){
 	
 	return lowByteRh + highByteRh + lowByteTemp + highByteTemp;
- 1f8:	20 91 72 00 	lds	r18, 0x0072	; 0x800072 <lowByteRh>
- 1fc:	80 91 76 00 	lds	r24, 0x0076	; 0x800076 <highByteRh>
- 200:	90 e0       	ldi	r25, 0x00	; 0
- 202:	82 0f       	add	r24, r18
- 204:	91 1d       	adc	r25, r1
- 206:	20 91 71 00 	lds	r18, 0x0071	; 0x800071 <lowByteTemp>
- 20a:	82 0f       	add	r24, r18
- 20c:	91 1d       	adc	r25, r1
- 20e:	20 91 75 00 	lds	r18, 0x0075	; 0x800075 <highByteTemp>
+ 272:	20 91 8c 00 	lds	r18, 0x008C	; 0x80008c <lowByteRh>
+ 276:	80 91 90 00 	lds	r24, 0x0090	; 0x800090 <highByteRh>
+ 27a:	90 e0       	ldi	r25, 0x00	; 0
+ 27c:	82 0f       	add	r24, r18
+ 27e:	91 1d       	adc	r25, r1
+ 280:	20 91 8b 00 	lds	r18, 0x008B	; 0x80008b <lowByteTemp>
+ 284:	82 0f       	add	r24, r18
+ 286:	91 1d       	adc	r25, r1
+ 288:	20 91 8f 00 	lds	r18, 0x008F	; 0x80008f <highByteTemp>
 }
- 212:	82 0f       	add	r24, r18
- 214:	91 1d       	adc	r25, r1
- 216:	08 95       	ret
+ 28c:	82 0f       	add	r24, r18
+ 28e:	91 1d       	adc	r25, r1
+ 290:	08 95       	ret
 
-00000218 <main>:
-void request();                /* Microcontroller send start pulse/request */
+00000292 <print_error>:
+
+void print_error()
+{
+lcdGotoXY(0,0);
+ 292:	60 e0       	ldi	r22, 0x00	; 0
+ 294:	80 e0       	ldi	r24, 0x00	; 0
+ 296:	5a df       	rcall	.-332    	; 0x14c <lcdGotoXY>
+lcdPuts("Sens    ");
+ 298:	89 e6       	ldi	r24, 0x69	; 105
+ 29a:	90 e0       	ldi	r25, 0x00	; 0
+ 29c:	66 df       	rcall	.-308    	; 0x16a <lcdPuts>
+lcdGotoXY(1,0);
+ 29e:	60 e0       	ldi	r22, 0x00	; 0
+ 2a0:	81 e0       	ldi	r24, 0x01	; 1
+ 2a2:	54 df       	rcall	.-344    	; 0x14c <lcdGotoXY>
+lcdPuts("Err     ");	
+ 2a4:	82 e7       	ldi	r24, 0x72	; 114
+ 2a6:	90 e0       	ldi	r25, 0x00	; 0
+ 2a8:	60 df       	rcall	.-320    	; 0x16a <lcdPuts>
+ 2aa:	08 95       	ret
+
+000002ac <print_negative_temperature>:
+		lcdGotoXY(0, 5);
+		lcdPuts("%");
+	}
+}
+
+void print_negative_temperature(char* buffer, int negativeTemp){
+ 2ac:	0f 93       	push	r16
+ 2ae:	1f 93       	push	r17
+ 2b0:	cf 93       	push	r28
+ 2b2:	df 93       	push	r29
+ 2b4:	8c 01       	movw	r16, r24
+ 2b6:	9b 01       	movw	r18, r22
+
+	uint16_t negativeData = negativeTemp/DEC;
+ 2b8:	cb 01       	movw	r24, r22
+ 2ba:	6a e0       	ldi	r22, 0x0A	; 10
+ 2bc:	70 e0       	ldi	r23, 0x00	; 0
+ 2be:	38 d1       	rcall	.+624    	; 0x530 <__divmodhi4>
+ 2c0:	eb 01       	movw	r28, r22
+	
+	if((abs(negativeTemp) != abs(MINIMUM_TEMP)))
+ 2c2:	c9 01       	movw	r24, r18
+ 2c4:	99 23       	and	r25, r25
+ 2c6:	24 f4       	brge	.+8      	; 0x2d0 <print_negative_temperature+0x24>
+ 2c8:	88 27       	eor	r24, r24
+ 2ca:	99 27       	eor	r25, r25
+ 2cc:	82 1b       	sub	r24, r18
+ 2ce:	93 0b       	sbc	r25, r19
+ 2d0:	88 97       	sbiw	r24, 0x28	; 40
+ 2d2:	e9 f1       	breq	.+122    	; 0x34e <print_negative_temperature+0xa2>
+	{
+		if(abs(negativeData) < abs(NEGATIVE_POINT))
+ 2d4:	ce 01       	movw	r24, r28
+ 2d6:	dd 23       	and	r29, r29
+ 2d8:	24 f4       	brge	.+8      	; 0x2e2 <print_negative_temperature+0x36>
+ 2da:	88 27       	eor	r24, r24
+ 2dc:	99 27       	eor	r25, r25
+ 2de:	8c 1b       	sub	r24, r28
+ 2e0:	9d 0b       	sbc	r25, r29
+ 2e2:	0a 97       	sbiw	r24, 0x0a	; 10
+ 2e4:	ec f4       	brge	.+58     	; 0x320 <print_negative_temperature+0x74>
+		{
+			lcdGotoXY(1,0);
+ 2e6:	60 e0       	ldi	r22, 0x00	; 0
+ 2e8:	81 e0       	ldi	r24, 0x01	; 1
+ 2ea:	30 df       	rcall	.-416    	; 0x14c <lcdGotoXY>
+			lcdPuts("T= ");
+ 2ec:	8b e7       	ldi	r24, 0x7B	; 123
+ 2ee:	90 e0       	ldi	r25, 0x00	; 0
+ 2f0:	3c df       	rcall	.-392    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,3);
+ 2f2:	63 e0       	ldi	r22, 0x03	; 3
+ 2f4:	81 e0       	ldi	r24, 0x01	; 1
+ 2f6:	2a df       	rcall	.-428    	; 0x14c <lcdGotoXY>
+			itoa(negativeData, buffer, DEC);
+ 2f8:	4a e0       	ldi	r20, 0x0A	; 10
+ 2fa:	50 e0       	ldi	r21, 0x00	; 0
+ 2fc:	b8 01       	movw	r22, r16
+ 2fe:	ce 01       	movw	r24, r28
+ 300:	2a d1       	rcall	.+596    	; 0x556 <itoa>
+			lcdPuts(buffer);
+ 302:	c8 01       	movw	r24, r16
+ 304:	32 df       	rcall	.-412    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,5);
+ 306:	65 e0       	ldi	r22, 0x05	; 5
+ 308:	81 e0       	ldi	r24, 0x01	; 1
+ 30a:	20 df       	rcall	.-448    	; 0x14c <lcdGotoXY>
+			lcdPuts(" ");
+ 30c:	89 e7       	ldi	r24, 0x79	; 121
+ 30e:	90 e0       	ldi	r25, 0x00	; 0
+ 310:	2c df       	rcall	.-424    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,6);
+ 312:	66 e0       	ldi	r22, 0x06	; 6
+ 314:	81 e0       	ldi	r24, 0x01	; 1
+ 316:	1a df       	rcall	.-460    	; 0x14c <lcdGotoXY>
+			lcdPuts("C ");
+ 318:	8f e7       	ldi	r24, 0x7F	; 127
+ 31a:	90 e0       	ldi	r25, 0x00	; 0
+ 31c:	26 df       	rcall	.-436    	; 0x16a <lcdPuts>
+ 31e:	18 c0       	rjmp	.+48     	; 0x350 <print_negative_temperature+0xa4>
+		}
+		else{
+			lcdGotoXY(1,0);
+ 320:	60 e0       	ldi	r22, 0x00	; 0
+ 322:	81 e0       	ldi	r24, 0x01	; 1
+ 324:	13 df       	rcall	.-474    	; 0x14c <lcdGotoXY>
+			lcdPuts("T=");
+ 326:	82 e8       	ldi	r24, 0x82	; 130
+ 328:	90 e0       	ldi	r25, 0x00	; 0
+ 32a:	1f df       	rcall	.-450    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,2);
+ 32c:	62 e0       	ldi	r22, 0x02	; 2
+ 32e:	81 e0       	ldi	r24, 0x01	; 1
+ 330:	0d df       	rcall	.-486    	; 0x14c <lcdGotoXY>
+			itoa(negativeData, buffer, DEC);
+ 332:	4a e0       	ldi	r20, 0x0A	; 10
+ 334:	50 e0       	ldi	r21, 0x00	; 0
+ 336:	b8 01       	movw	r22, r16
+ 338:	ce 01       	movw	r24, r28
+ 33a:	0d d1       	rcall	.+538    	; 0x556 <itoa>
+			lcdPuts(buffer);
+ 33c:	c8 01       	movw	r24, r16
+ 33e:	15 df       	rcall	.-470    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,5);
+ 340:	65 e0       	ldi	r22, 0x05	; 5
+ 342:	81 e0       	ldi	r24, 0x01	; 1
+ 344:	03 df       	rcall	.-506    	; 0x14c <lcdGotoXY>
+			lcdPuts("C ");
+ 346:	8f e7       	ldi	r24, 0x7F	; 127
+ 348:	90 e0       	ldi	r25, 0x00	; 0
+ 34a:	0f df       	rcall	.-482    	; 0x16a <lcdPuts>
+ 34c:	01 c0       	rjmp	.+2      	; 0x350 <print_negative_temperature+0xa4>
+		}
+	}
+	else
+	{
+		print_error();
+ 34e:	a1 df       	rcall	.-190    	; 0x292 <print_error>
+	}
+}
+ 350:	df 91       	pop	r29
+ 352:	cf 91       	pop	r28
+ 354:	1f 91       	pop	r17
+ 356:	0f 91       	pop	r16
+ 358:	08 95       	ret
+
+0000035a <print_temperature>:
+
+void print_temperature(char* buffer, uint16_t temp_after_point)
+{
+ 35a:	ef 92       	push	r14
+ 35c:	ff 92       	push	r15
+ 35e:	0f 93       	push	r16
+ 360:	1f 93       	push	r17
+ 362:	cf 93       	push	r28
+ 364:	df 93       	push	r29
+ 366:	ec 01       	movw	r28, r24
+ 368:	7b 01       	movw	r14, r22
+	uint16_t temperatureData = temperatureResult / DOZEN;
+ 36a:	80 91 8d 00 	lds	r24, 0x008D	; 0x80008d <temperatureResult>
+ 36e:	90 91 8e 00 	lds	r25, 0x008E	; 0x80008e <temperatureResult+0x1>
+ 372:	6a e0       	ldi	r22, 0x0A	; 10
+ 374:	70 e0       	ldi	r23, 0x00	; 0
+ 376:	c8 d0       	rcall	.+400    	; 0x508 <__udivmodhi4>
+ 378:	06 2f       	mov	r16, r22
+ 37a:	17 2f       	mov	r17, r23
+ 37c:	86 2f       	mov	r24, r22
+ 37e:	97 2f       	mov	r25, r23
+	
+	if(temperatureData != MAXIMUM_TEMP) 
+ 380:	80 35       	cpi	r24, 0x50	; 80
+ 382:	91 05       	cpc	r25, r1
+ 384:	09 f4       	brne	.+2      	; 0x388 <print_temperature+0x2e>
+ 386:	52 c0       	rjmp	.+164    	; 0x42c <__LOCK_REGION_LENGTH__+0x2c>
+	{
+		
+		if(temperatureData < DEC)
+ 388:	0a 97       	sbiw	r24, 0x0a	; 10
+ 38a:	40 f5       	brcc	.+80     	; 0x3dc <print_temperature+0x82>
+		{
+			lcdGotoXY(1,0);
+ 38c:	60 e0       	ldi	r22, 0x00	; 0
+ 38e:	81 e0       	ldi	r24, 0x01	; 1
+ 390:	dd de       	rcall	.-582    	; 0x14c <lcdGotoXY>
+			lcdPuts("T= ");
+ 392:	8b e7       	ldi	r24, 0x7B	; 123
+ 394:	90 e0       	ldi	r25, 0x00	; 0
+ 396:	e9 de       	rcall	.-558    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,3);
+ 398:	63 e0       	ldi	r22, 0x03	; 3
+ 39a:	81 e0       	ldi	r24, 0x01	; 1
+ 39c:	d7 de       	rcall	.-594    	; 0x14c <lcdGotoXY>
+			itoa(temperatureData, buffer, DEC);
+ 39e:	4a e0       	ldi	r20, 0x0A	; 10
+ 3a0:	50 e0       	ldi	r21, 0x00	; 0
+ 3a2:	be 01       	movw	r22, r28
+ 3a4:	80 2f       	mov	r24, r16
+ 3a6:	91 2f       	mov	r25, r17
+ 3a8:	d6 d0       	rcall	.+428    	; 0x556 <itoa>
+			lcdPuts(buffer);
+ 3aa:	ce 01       	movw	r24, r28
+ 3ac:	de de       	rcall	.-580    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,4);
+ 3ae:	64 e0       	ldi	r22, 0x04	; 4
+ 3b0:	81 e0       	ldi	r24, 0x01	; 1
+ 3b2:	cc de       	rcall	.-616    	; 0x14c <lcdGotoXY>
+			lcdPuts(".");
+ 3b4:	85 e8       	ldi	r24, 0x85	; 133
+ 3b6:	90 e0       	ldi	r25, 0x00	; 0
+ 3b8:	d8 de       	rcall	.-592    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,5);
+ 3ba:	65 e0       	ldi	r22, 0x05	; 5
+ 3bc:	81 e0       	ldi	r24, 0x01	; 1
+ 3be:	c6 de       	rcall	.-628    	; 0x14c <lcdGotoXY>
+			itoa(temp_after_point, buffer, DEC);
+ 3c0:	4a e0       	ldi	r20, 0x0A	; 10
+ 3c2:	50 e0       	ldi	r21, 0x00	; 0
+ 3c4:	be 01       	movw	r22, r28
+ 3c6:	c7 01       	movw	r24, r14
+ 3c8:	c6 d0       	rcall	.+396    	; 0x556 <itoa>
+			lcdPuts(buffer);
+ 3ca:	ce 01       	movw	r24, r28
+ 3cc:	ce de       	rcall	.-612    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,6);
+ 3ce:	66 e0       	ldi	r22, 0x06	; 6
+ 3d0:	81 e0       	ldi	r24, 0x01	; 1
+ 3d2:	bc de       	rcall	.-648    	; 0x14c <lcdGotoXY>
+			lcdPuts("C");
+ 3d4:	87 e8       	ldi	r24, 0x87	; 135
+ 3d6:	90 e0       	ldi	r25, 0x00	; 0
+ 3d8:	c8 de       	rcall	.-624    	; 0x16a <lcdPuts>
+ 3da:	29 c0       	rjmp	.+82     	; 0x42e <__LOCK_REGION_LENGTH__+0x2e>
+		}
+		else
+		{
+			lcdGotoXY(1,0);
+ 3dc:	60 e0       	ldi	r22, 0x00	; 0
+ 3de:	81 e0       	ldi	r24, 0x01	; 1
+ 3e0:	b5 de       	rcall	.-662    	; 0x14c <lcdGotoXY>
+			lcdPuts("T=");
+ 3e2:	82 e8       	ldi	r24, 0x82	; 130
+ 3e4:	90 e0       	ldi	r25, 0x00	; 0
+ 3e6:	c1 de       	rcall	.-638    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,2);
+ 3e8:	62 e0       	ldi	r22, 0x02	; 2
+ 3ea:	81 e0       	ldi	r24, 0x01	; 1
+ 3ec:	af de       	rcall	.-674    	; 0x14c <lcdGotoXY>
+			itoa(temperatureData, buffer, DEC);
+ 3ee:	4a e0       	ldi	r20, 0x0A	; 10
+ 3f0:	50 e0       	ldi	r21, 0x00	; 0
+ 3f2:	be 01       	movw	r22, r28
+ 3f4:	80 2f       	mov	r24, r16
+ 3f6:	91 2f       	mov	r25, r17
+ 3f8:	ae d0       	rcall	.+348    	; 0x556 <itoa>
+			lcdPuts(buffer);
+ 3fa:	ce 01       	movw	r24, r28
+ 3fc:	b6 de       	rcall	.-660    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,4);
+ 3fe:	64 e0       	ldi	r22, 0x04	; 4
+ 400:	81 e0       	ldi	r24, 0x01	; 1
+ 402:	a4 de       	rcall	.-696    	; 0x14c <lcdGotoXY>
+			lcdPuts(".");
+ 404:	85 e8       	ldi	r24, 0x85	; 133
+ 406:	90 e0       	ldi	r25, 0x00	; 0
+ 408:	b0 de       	rcall	.-672    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,5);
+ 40a:	65 e0       	ldi	r22, 0x05	; 5
+ 40c:	81 e0       	ldi	r24, 0x01	; 1
+ 40e:	9e de       	rcall	.-708    	; 0x14c <lcdGotoXY>
+			itoa(temp_after_point, buffer, DEC);
+ 410:	4a e0       	ldi	r20, 0x0A	; 10
+ 412:	50 e0       	ldi	r21, 0x00	; 0
+ 414:	be 01       	movw	r22, r28
+ 416:	c7 01       	movw	r24, r14
+ 418:	9e d0       	rcall	.+316    	; 0x556 <itoa>
+			lcdPuts(buffer);
+ 41a:	ce 01       	movw	r24, r28
+ 41c:	a6 de       	rcall	.-692    	; 0x16a <lcdPuts>
+			lcdGotoXY(1,6);
+ 41e:	66 e0       	ldi	r22, 0x06	; 6
+ 420:	81 e0       	ldi	r24, 0x01	; 1
+ 422:	94 de       	rcall	.-728    	; 0x14c <lcdGotoXY>
+			lcdPuts("C");
+ 424:	87 e8       	ldi	r24, 0x87	; 135
+ 426:	90 e0       	ldi	r25, 0x00	; 0
+ 428:	a0 de       	rcall	.-704    	; 0x16a <lcdPuts>
+ 42a:	01 c0       	rjmp	.+2      	; 0x42e <__LOCK_REGION_LENGTH__+0x2e>
+		}
+	}
+	else
+	{
+		print_error();
+ 42c:	32 df       	rcall	.-412    	; 0x292 <print_error>
+	}
+	
+}
+ 42e:	df 91       	pop	r29
+ 430:	cf 91       	pop	r28
+ 432:	1f 91       	pop	r17
+ 434:	0f 91       	pop	r16
+ 436:	ff 90       	pop	r15
+ 438:	ef 90       	pop	r14
+ 43a:	08 95       	ret
+
+0000043c <main>:
 void response();				/* receive response from DHT11 */
 uint8_t receive_data();			/* receive data */
 int get_checksum();
+void print_error();
 
 int main(void) {
- 218:	cf 93       	push	r28
- 21a:	df 93       	push	r29
- 21c:	cd b7       	in	r28, 0x3d	; 61
- 21e:	dd 27       	eor	r29, r29
- 220:	c3 50       	subi	r28, 0x03	; 3
- 222:	cd bf       	out	0x3d, r28	; 61
-	
-	char buffer[3];
-	int temp_buffer;
-    uint16_t temp_buffer_after_point;
+ 43c:	cf 93       	push	r28
+ 43e:	df 93       	push	r29
+ 440:	cd b7       	in	r28, 0x3d	; 61
+ 442:	dd 27       	eor	r29, r29
+ 444:	c6 50       	subi	r28, 0x06	; 6
+ 446:	cd bf       	out	0x3d, r28	; 61
+	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
+	uint16_t temp_buffer;
+	uint16_t temp_buffer_after_point;
+	int negativeTemp;
 
 	lcdInit();
- 224:	47 df       	rcall	.-370    	; 0xb4 <lcdInit>
+ 448:	35 de       	rcall	.-918    	; 0xb4 <lcdInit>
 	lcdClear();
- 226:	88 df       	rcall	.-240    	; 0x138 <lcdClear>
+ 44a:	76 de       	rcall	.-788    	; 0x138 <lcdClear>
 	lcdSetDisplay(LCD_DISPLAY_ON);
- 228:	84 e0       	ldi	r24, 0x04	; 4
- 22a:	7c df       	rcall	.-264    	; 0x124 <lcdSetDisplay>
+ 44c:	84 e0       	ldi	r24, 0x04	; 4
+ 44e:	6a de       	rcall	.-812    	; 0x124 <lcdSetDisplay>
 	lcdSetCursor(LCD_CURSOR_OFF);
- 22c:	80 e0       	ldi	r24, 0x00	; 0
- 22e:	70 df       	rcall	.-288    	; 0x110 <lcdSetCursor>
+ 450:	80 e0       	ldi	r24, 0x00	; 0
+ 452:	5e de       	rcall	.-836    	; 0x110 <lcdSetCursor>
+		{
+			print_error();
+		}
+		else
+		{
+			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+ 454:	0f 2e       	mov	r0, r31
+ 456:	fa e0       	ldi	r31, 0x0A	; 10
+ 458:	ef 2e       	mov	r14, r31
+ 45a:	f1 2c       	mov	r15, r1
+ 45c:	f0 2d       	mov	r31, r0
+	lcdSetDisplay(LCD_DISPLAY_ON);
+	lcdSetCursor(LCD_CURSOR_OFF);
 	
 	while (1) {
 
 		request();		/* send start pulse */
- 230:	b2 df       	rcall	.-156    	; 0x196 <request>
+ 45e:	db de       	rcall	.-586    	; 0x216 <request>
 		response();		/* receive response */
- 232:	be df       	rcall	.-132    	; 0x1b0 <response>
+ 460:	e4 de       	rcall	.-568    	; 0x22a <response>
+		[1] RH decimal
+		[2] Temp integral
+		[3] Temp decimal
+		[4] checksum is the sum of all four bytes AND 255
+		*/
 		lowByteRh=receive_data();	/* store first eight bit in I_RH */
- 234:	c5 df       	rcall	.-118    	; 0x1c0 <receive_data>
- 236:	80 93 72 00 	sts	0x0072, r24	; 0x800072 <lowByteRh>
+ 462:	eb de       	rcall	.-554    	; 0x23a <receive_data>
+ 464:	80 93 8c 00 	sts	0x008C, r24	; 0x80008c <lowByteRh>
 		highByteRh=receive_data();	/* store next eight bit in D_RH */
- 23a:	c2 df       	rcall	.-124    	; 0x1c0 <receive_data>
- 23c:	80 93 76 00 	sts	0x0076, r24	; 0x800076 <highByteRh>
+ 468:	e8 de       	rcall	.-560    	; 0x23a <receive_data>
+ 46a:	80 93 90 00 	sts	0x0090, r24	; 0x800090 <highByteRh>
 		lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
- 240:	bf df       	rcall	.-130    	; 0x1c0 <receive_data>
- 242:	80 93 71 00 	sts	0x0071, r24	; 0x800071 <lowByteTemp>
+ 46e:	e5 de       	rcall	.-566    	; 0x23a <receive_data>
+ 470:	80 93 8b 00 	sts	0x008B, r24	; 0x80008b <lowByteTemp>
 		highByteTemp=receive_data();	/* store next eight bit in D_Temp */
- 246:	bc df       	rcall	.-136    	; 0x1c0 <receive_data>
- 248:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <highByteTemp>
+ 474:	e2 de       	rcall	.-572    	; 0x23a <receive_data>
+ 476:	80 93 8f 00 	sts	0x008F, r24	; 0x80008f <highByteTemp>
 		checkSum=receive_data();/* store next eight bit in CheckSum */
- 24c:	b9 df       	rcall	.-142    	; 0x1c0 <receive_data>
- 24e:	18 2f       	mov	r17, r24
- 250:	80 93 77 00 	sts	0x0077, r24	; 0x800077 <checkSum>
+ 47a:	df de       	rcall	.-578    	; 0x23a <receive_data>
+ 47c:	18 2f       	mov	r17, r24
+ 47e:	80 93 91 00 	sts	0x0091, r24	; 0x800091 <checkSum>
 		
-		if (get_checksum() != checkSum)
- 254:	d1 df       	rcall	.-94     	; 0x1f8 <get_checksum>
- 256:	21 2f       	mov	r18, r17
- 258:	30 e0       	ldi	r19, 0x00	; 0
- 25a:	82 17       	cp	r24, r18
- 25c:	93 07       	cpc	r25, r19
- 25e:	39 f0       	breq	.+14     	; 0x26e <main+0x56>
+		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
+		if ((get_checksum() & 255) != checkSum)
+ 482:	f7 de       	rcall	.-530    	; 0x272 <get_checksum>
+ 484:	99 27       	eor	r25, r25
+ 486:	21 2f       	mov	r18, r17
+ 488:	30 e0       	ldi	r19, 0x00	; 0
+ 48a:	82 17       	cp	r24, r18
+ 48c:	93 07       	cpc	r25, r19
+ 48e:	11 f0       	breq	.+4      	; 0x494 <main+0x58>
 		{
-			lcdGotoXY(0,1);
- 260:	61 e0       	ldi	r22, 0x01	; 1
- 262:	80 e0       	ldi	r24, 0x00	; 0
- 264:	73 df       	rcall	.-282    	; 0x14c <lcdGotoXY>
-			lcdPuts("Error");
- 266:	80 e6       	ldi	r24, 0x60	; 96
- 268:	90 e0       	ldi	r25, 0x00	; 0
- 26a:	7f df       	rcall	.-258    	; 0x16a <lcdPuts>
- 26c:	5c c0       	rjmp	.+184    	; 0x326 <main+0x10e>
+			print_error();
+ 490:	00 df       	rcall	.-512    	; 0x292 <print_error>
+ 492:	30 c0       	rjmp	.+96     	; 0x4f4 <main+0xb8>
 		}
 		else
 		{
-			lcdClear();
- 26e:	64 df       	rcall	.-312    	; 0x138 <lcdClear>
-			lcdGotoXY(0,0);
- 270:	60 e0       	ldi	r22, 0x00	; 0
- 272:	80 e0       	ldi	r24, 0x00	; 0
- 274:	6b df       	rcall	.-298    	; 0x14c <lcdGotoXY>
-			lcdPuts("H=");
- 276:	86 e6       	ldi	r24, 0x66	; 102
- 278:	90 e0       	ldi	r25, 0x00	; 0
- 27a:	77 df       	rcall	.-274    	; 0x16a <lcdPuts>
-			lcdGotoXY(0,3);
- 27c:	63 e0       	ldi	r22, 0x03	; 3
- 27e:	80 e0       	ldi	r24, 0x00	; 0
- 280:	65 df       	rcall	.-310    	; 0x14c <lcdGotoXY>
-			humidityResult = (lowByteRh * 256 + highByteRh );
- 282:	80 91 72 00 	lds	r24, 0x0072	; 0x800072 <lowByteRh>
- 286:	90 e0       	ldi	r25, 0x00	; 0
- 288:	98 2f       	mov	r25, r24
- 28a:	88 27       	eor	r24, r24
- 28c:	20 91 76 00 	lds	r18, 0x0076	; 0x800076 <highByteRh>
- 290:	82 0f       	add	r24, r18
- 292:	91 1d       	adc	r25, r1
- 294:	90 93 79 00 	sts	0x0079, r25	; 0x800079 <humidityResult+0x1>
- 298:	80 93 78 00 	sts	0x0078, r24	; 0x800078 <humidityResult>
-			itoa(humidityResult, buffer, 10);
- 29c:	4a e0       	ldi	r20, 0x0A	; 10
- 29e:	50 e0       	ldi	r21, 0x00	; 0
- 2a0:	be 01       	movw	r22, r28
- 2a2:	6f 5f       	subi	r22, 0xFF	; 255
- 2a4:	7f 4f       	sbci	r23, 0xFF	; 255
- 2a6:	70 d0       	rcall	.+224    	; 0x388 <itoa>
-			lcdPuts(buffer);
- 2a8:	ce 01       	movw	r24, r28
- 2aa:	01 96       	adiw	r24, 0x01	; 1
- 2ac:	5e df       	rcall	.-324    	; 0x16a <lcdPuts>
-			
-			lcdGotoXY(1,0);
- 2ae:	60 e0       	ldi	r22, 0x00	; 0
- 2b0:	81 e0       	ldi	r24, 0x01	; 1
- 2b2:	4c df       	rcall	.-360    	; 0x14c <lcdGotoXY>
-			lcdPuts("T=");
- 2b4:	89 e6       	ldi	r24, 0x69	; 105
- 2b6:	90 e0       	ldi	r25, 0x00	; 0
- 2b8:	58 df       	rcall	.-336    	; 0x16a <lcdPuts>
-			lcdGotoXY(1,3);
- 2ba:	63 e0       	ldi	r22, 0x03	; 3
- 2bc:	81 e0       	ldi	r24, 0x01	; 1
- 2be:	46 df       	rcall	.-372    	; 0x14c <lcdGotoXY>
-			
+			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+ 494:	80 91 8c 00 	lds	r24, 0x008C	; 0x80008c <lowByteRh>
+ 498:	90 e0       	ldi	r25, 0x00	; 0
+ 49a:	98 2f       	mov	r25, r24
+ 49c:	88 27       	eor	r24, r24
+ 49e:	20 91 90 00 	lds	r18, 0x0090	; 0x800090 <highByteRh>
+ 4a2:	82 0f       	add	r24, r18
+ 4a4:	91 1d       	adc	r25, r1
+ 4a6:	b7 01       	movw	r22, r14
+ 4a8:	43 d0       	rcall	.+134    	; 0x530 <__divmodhi4>
+ 4aa:	70 93 93 00 	sts	0x0093, r23	; 0x800093 <humidityResult+0x1>
+ 4ae:	60 93 92 00 	sts	0x0092, r22	; 0x800092 <humidityResult>
+			print_humidity(hBuffer);
+ 4b2:	ce 01       	movw	r24, r28
+ 4b4:	04 96       	adiw	r24, 0x04	; 4
+ 4b6:	6f de       	rcall	.-802    	; 0x196 <print_humidity>
 			temperatureResult = (lowByteTemp * 256 + highByteTemp );
- 2c0:	00 91 71 00 	lds	r16, 0x0071	; 0x800071 <lowByteTemp>
- 2c4:	10 e0       	ldi	r17, 0x00	; 0
- 2c6:	10 2f       	mov	r17, r16
- 2c8:	00 27       	eor	r16, r16
- 2ca:	80 91 75 00 	lds	r24, 0x0075	; 0x800075 <highByteTemp>
- 2ce:	08 0f       	add	r16, r24
- 2d0:	11 1d       	adc	r17, r1
- 2d2:	10 93 74 00 	sts	0x0074, r17	; 0x800074 <temperatureResult+0x1>
- 2d6:	00 93 73 00 	sts	0x0073, r16	; 0x800073 <temperatureResult>
-			temp_buffer = temperatureResult;
-						
-			itoa(temperatureResult, buffer, 10);
- 2da:	4a e0       	ldi	r20, 0x0A	; 10
- 2dc:	50 e0       	ldi	r21, 0x00	; 0
- 2de:	be 01       	movw	r22, r28
- 2e0:	6f 5f       	subi	r22, 0xFF	; 255
- 2e2:	7f 4f       	sbci	r23, 0xFF	; 255
- 2e4:	c8 01       	movw	r24, r16
- 2e6:	50 d0       	rcall	.+160    	; 0x388 <itoa>
-			lcdPuts(buffer);
- 2e8:	ce 01       	movw	r24, r28
- 2ea:	01 96       	adiw	r24, 0x01	; 1
- 2ec:	3e df       	rcall	.-388    	; 0x16a <lcdPuts>
-			lcdGotoXY(1,5);
- 2ee:	65 e0       	ldi	r22, 0x05	; 5
- 2f0:	81 e0       	ldi	r24, 0x01	; 1
- 2f2:	2c df       	rcall	.-424    	; 0x14c <lcdGotoXY>
-			lcdPuts(".");
- 2f4:	8c e6       	ldi	r24, 0x6C	; 108
- 2f6:	90 e0       	ldi	r25, 0x00	; 0
- 2f8:	38 df       	rcall	.-400    	; 0x16a <lcdPuts>
-			lcdGotoXY(1,6);
- 2fa:	66 e0       	ldi	r22, 0x06	; 6
- 2fc:	81 e0       	ldi	r24, 0x01	; 1
- 2fe:	26 df       	rcall	.-436    	; 0x14c <lcdGotoXY>
-			temp_buffer_after_point = temp_buffer % 10;
-			itoa(temp_buffer_after_point, buffer, 10);
- 300:	c8 01       	movw	r24, r16
- 302:	6a e0       	ldi	r22, 0x0A	; 10
- 304:	70 e0       	ldi	r23, 0x00	; 0
- 306:	19 d0       	rcall	.+50     	; 0x33a <__divmodhi4>
- 308:	4a e0       	ldi	r20, 0x0A	; 10
- 30a:	50 e0       	ldi	r21, 0x00	; 0
- 30c:	be 01       	movw	r22, r28
- 30e:	6f 5f       	subi	r22, 0xFF	; 255
- 310:	7f 4f       	sbci	r23, 0xFF	; 255
- 312:	3a d0       	rcall	.+116    	; 0x388 <itoa>
-			lcdPuts(buffer);
- 314:	ce 01       	movw	r24, r28
- 316:	01 96       	adiw	r24, 0x01	; 1
- 318:	28 df       	rcall	.-432    	; 0x16a <lcdPuts>
-			lcdGotoXY(1,8);
- 31a:	68 e0       	ldi	r22, 0x08	; 8
- 31c:	81 e0       	ldi	r24, 0x01	; 1
- 31e:	16 df       	rcall	.-468    	; 0x14c <lcdGotoXY>
-			lcdPuts("C");
- 320:	8e e6       	ldi	r24, 0x6E	; 110
- 322:	90 e0       	ldi	r25, 0x00	; 0
- 324:	22 df       	rcall	.-444    	; 0x16a <lcdPuts>
+ 4b8:	80 91 8b 00 	lds	r24, 0x008B	; 0x80008b <lowByteTemp>
+ 4bc:	90 e0       	ldi	r25, 0x00	; 0
+ 4be:	98 2f       	mov	r25, r24
+ 4c0:	88 27       	eor	r24, r24
+ 4c2:	20 91 8f 00 	lds	r18, 0x008F	; 0x80008f <highByteTemp>
+ 4c6:	82 0f       	add	r24, r18
+ 4c8:	91 1d       	adc	r25, r1
+ 4ca:	90 93 8e 00 	sts	0x008E, r25	; 0x80008e <temperatureResult+0x1>
+ 4ce:	80 93 8d 00 	sts	0x008D, r24	; 0x80008d <temperatureResult>
+			
+			if(temperatureResult > TEMP_MASK)
+ 4d2:	99 23       	and	r25, r25
+ 4d4:	4c f4       	brge	.+18     	; 0x4e8 <main+0xac>
+			{
+				negativeTemp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+				print_negative_temperature(tBuffer, negativeTemp);
+ 4d6:	9f 77       	andi	r25, 0x7F	; 127
+ 4d8:	66 27       	eor	r22, r22
+ 4da:	77 27       	eor	r23, r23
+ 4dc:	68 1b       	sub	r22, r24
+ 4de:	79 0b       	sbc	r23, r25
+ 4e0:	ce 01       	movw	r24, r28
+ 4e2:	01 96       	adiw	r24, 0x01	; 1
+ 4e4:	e3 de       	rcall	.-570    	; 0x2ac <print_negative_temperature>
+ 4e6:	06 c0       	rjmp	.+12     	; 0x4f4 <main+0xb8>
+			}
+			else
+			{
+				temp_buffer = temperatureResult;
+				temp_buffer_after_point = temp_buffer % DOZEN;
+				print_temperature(tBuffer, temp_buffer_after_point);
+ 4e8:	b7 01       	movw	r22, r14
+ 4ea:	0e d0       	rcall	.+28     	; 0x508 <__udivmodhi4>
+ 4ec:	bc 01       	movw	r22, r24
+ 4ee:	ce 01       	movw	r24, r28
+ 4f0:	01 96       	adiw	r24, 0x01	; 1
+ 4f2:	33 df       	rcall	.-410    	; 0x35a <print_temperature>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
- 326:	2f ef       	ldi	r18, 0xFF	; 255
- 328:	89 e6       	ldi	r24, 0x69	; 105
- 32a:	98 e1       	ldi	r25, 0x18	; 24
- 32c:	21 50       	subi	r18, 0x01	; 1
- 32e:	80 40       	sbci	r24, 0x00	; 0
- 330:	90 40       	sbci	r25, 0x00	; 0
- 332:	e1 f7       	brne	.-8      	; 0x32c <main+0x114>
- 334:	00 c0       	rjmp	.+0      	; 0x336 <main+0x11e>
- 336:	00 00       	nop
- 338:	7b cf       	rjmp	.-266    	; 0x230 <main+0x18>
+ 4f4:	2f ef       	ldi	r18, 0xFF	; 255
+ 4f6:	89 e6       	ldi	r24, 0x69	; 105
+ 4f8:	98 e1       	ldi	r25, 0x18	; 24
+ 4fa:	21 50       	subi	r18, 0x01	; 1
+ 4fc:	80 40       	sbci	r24, 0x00	; 0
+ 4fe:	90 40       	sbci	r25, 0x00	; 0
+ 500:	e1 f7       	brne	.-8      	; 0x4fa <main+0xbe>
+ 502:	00 c0       	rjmp	.+0      	; 0x504 <main+0xc8>
+ 504:	00 00       	nop
+ 506:	ab cf       	rjmp	.-170    	; 0x45e <main+0x22>
 
-0000033a <__divmodhi4>:
- 33a:	97 fb       	bst	r25, 7
- 33c:	07 2e       	mov	r0, r23
- 33e:	16 f4       	brtc	.+4      	; 0x344 <__divmodhi4+0xa>
- 340:	00 94       	com	r0
- 342:	06 d0       	rcall	.+12     	; 0x350 <__divmodhi4_neg1>
- 344:	77 fd       	sbrc	r23, 7
- 346:	08 d0       	rcall	.+16     	; 0x358 <__divmodhi4_neg2>
- 348:	0b d0       	rcall	.+22     	; 0x360 <__udivmodhi4>
- 34a:	07 fc       	sbrc	r0, 7
- 34c:	05 d0       	rcall	.+10     	; 0x358 <__divmodhi4_neg2>
- 34e:	3e f4       	brtc	.+14     	; 0x35e <__divmodhi4_exit>
+00000508 <__udivmodhi4>:
+ 508:	aa 1b       	sub	r26, r26
+ 50a:	bb 1b       	sub	r27, r27
+ 50c:	51 e1       	ldi	r21, 0x11	; 17
+ 50e:	07 c0       	rjmp	.+14     	; 0x51e <__udivmodhi4_ep>
 
-00000350 <__divmodhi4_neg1>:
- 350:	90 95       	com	r25
- 352:	81 95       	neg	r24
- 354:	9f 4f       	sbci	r25, 0xFF	; 255
- 356:	08 95       	ret
+00000510 <__udivmodhi4_loop>:
+ 510:	aa 1f       	adc	r26, r26
+ 512:	bb 1f       	adc	r27, r27
+ 514:	a6 17       	cp	r26, r22
+ 516:	b7 07       	cpc	r27, r23
+ 518:	10 f0       	brcs	.+4      	; 0x51e <__udivmodhi4_ep>
+ 51a:	a6 1b       	sub	r26, r22
+ 51c:	b7 0b       	sbc	r27, r23
 
-00000358 <__divmodhi4_neg2>:
- 358:	70 95       	com	r23
- 35a:	61 95       	neg	r22
- 35c:	7f 4f       	sbci	r23, 0xFF	; 255
+0000051e <__udivmodhi4_ep>:
+ 51e:	88 1f       	adc	r24, r24
+ 520:	99 1f       	adc	r25, r25
+ 522:	5a 95       	dec	r21
+ 524:	a9 f7       	brne	.-22     	; 0x510 <__udivmodhi4_loop>
+ 526:	80 95       	com	r24
+ 528:	90 95       	com	r25
+ 52a:	bc 01       	movw	r22, r24
+ 52c:	cd 01       	movw	r24, r26
+ 52e:	08 95       	ret
 
-0000035e <__divmodhi4_exit>:
- 35e:	08 95       	ret
+00000530 <__divmodhi4>:
+ 530:	97 fb       	bst	r25, 7
+ 532:	07 2e       	mov	r0, r23
+ 534:	16 f4       	brtc	.+4      	; 0x53a <__divmodhi4+0xa>
+ 536:	00 94       	com	r0
+ 538:	06 d0       	rcall	.+12     	; 0x546 <__divmodhi4_neg1>
+ 53a:	77 fd       	sbrc	r23, 7
+ 53c:	08 d0       	rcall	.+16     	; 0x54e <__divmodhi4_neg2>
+ 53e:	e4 df       	rcall	.-56     	; 0x508 <__udivmodhi4>
+ 540:	07 fc       	sbrc	r0, 7
+ 542:	05 d0       	rcall	.+10     	; 0x54e <__divmodhi4_neg2>
+ 544:	3e f4       	brtc	.+14     	; 0x554 <__divmodhi4_exit>
 
-00000360 <__udivmodhi4>:
- 360:	aa 1b       	sub	r26, r26
- 362:	bb 1b       	sub	r27, r27
- 364:	51 e1       	ldi	r21, 0x11	; 17
- 366:	07 c0       	rjmp	.+14     	; 0x376 <__udivmodhi4_ep>
+00000546 <__divmodhi4_neg1>:
+ 546:	90 95       	com	r25
+ 548:	81 95       	neg	r24
+ 54a:	9f 4f       	sbci	r25, 0xFF	; 255
+ 54c:	08 95       	ret
 
-00000368 <__udivmodhi4_loop>:
- 368:	aa 1f       	adc	r26, r26
- 36a:	bb 1f       	adc	r27, r27
- 36c:	a6 17       	cp	r26, r22
- 36e:	b7 07       	cpc	r27, r23
- 370:	10 f0       	brcs	.+4      	; 0x376 <__udivmodhi4_ep>
- 372:	a6 1b       	sub	r26, r22
- 374:	b7 0b       	sbc	r27, r23
+0000054e <__divmodhi4_neg2>:
+ 54e:	70 95       	com	r23
+ 550:	61 95       	neg	r22
+ 552:	7f 4f       	sbci	r23, 0xFF	; 255
 
-00000376 <__udivmodhi4_ep>:
- 376:	88 1f       	adc	r24, r24
- 378:	99 1f       	adc	r25, r25
- 37a:	5a 95       	dec	r21
- 37c:	a9 f7       	brne	.-22     	; 0x368 <__udivmodhi4_loop>
- 37e:	80 95       	com	r24
- 380:	90 95       	com	r25
- 382:	bc 01       	movw	r22, r24
- 384:	cd 01       	movw	r24, r26
- 386:	08 95       	ret
+00000554 <__divmodhi4_exit>:
+ 554:	08 95       	ret
 
-00000388 <itoa>:
- 388:	45 32       	cpi	r20, 0x25	; 37
- 38a:	51 05       	cpc	r21, r1
- 38c:	18 f4       	brcc	.+6      	; 0x394 <itoa+0xc>
- 38e:	42 30       	cpi	r20, 0x02	; 2
- 390:	08 f0       	brcs	.+2      	; 0x394 <itoa+0xc>
- 392:	04 c0       	rjmp	.+8      	; 0x39c <__itoa_ncheck>
- 394:	fb 01       	movw	r30, r22
- 396:	10 82       	st	Z, r1
- 398:	cb 01       	movw	r24, r22
- 39a:	08 95       	ret
+00000556 <itoa>:
+ 556:	45 32       	cpi	r20, 0x25	; 37
+ 558:	51 05       	cpc	r21, r1
+ 55a:	18 f4       	brcc	.+6      	; 0x562 <itoa+0xc>
+ 55c:	42 30       	cpi	r20, 0x02	; 2
+ 55e:	08 f0       	brcs	.+2      	; 0x562 <itoa+0xc>
+ 560:	04 c0       	rjmp	.+8      	; 0x56a <__itoa_ncheck>
+ 562:	fb 01       	movw	r30, r22
+ 564:	10 82       	st	Z, r1
+ 566:	cb 01       	movw	r24, r22
+ 568:	08 95       	ret
 
-0000039c <__itoa_ncheck>:
- 39c:	bb 27       	eor	r27, r27
- 39e:	4a 30       	cpi	r20, 0x0A	; 10
- 3a0:	31 f4       	brne	.+12     	; 0x3ae <__itoa_ncheck+0x12>
- 3a2:	99 23       	and	r25, r25
- 3a4:	22 f4       	brpl	.+8      	; 0x3ae <__itoa_ncheck+0x12>
- 3a6:	bd e2       	ldi	r27, 0x2D	; 45
- 3a8:	90 95       	com	r25
- 3aa:	81 95       	neg	r24
- 3ac:	9f 4f       	sbci	r25, 0xFF	; 255
- 3ae:	01 c0       	rjmp	.+2      	; 0x3b2 <__utoa_common>
+0000056a <__itoa_ncheck>:
+ 56a:	bb 27       	eor	r27, r27
+ 56c:	4a 30       	cpi	r20, 0x0A	; 10
+ 56e:	31 f4       	brne	.+12     	; 0x57c <__itoa_ncheck+0x12>
+ 570:	99 23       	and	r25, r25
+ 572:	22 f4       	brpl	.+8      	; 0x57c <__itoa_ncheck+0x12>
+ 574:	bd e2       	ldi	r27, 0x2D	; 45
+ 576:	90 95       	com	r25
+ 578:	81 95       	neg	r24
+ 57a:	9f 4f       	sbci	r25, 0xFF	; 255
+ 57c:	01 c0       	rjmp	.+2      	; 0x580 <__utoa_common>
 
-000003b0 <__utoa_ncheck>:
- 3b0:	bb 27       	eor	r27, r27
+0000057e <__utoa_ncheck>:
+ 57e:	bb 27       	eor	r27, r27
 
-000003b2 <__utoa_common>:
- 3b2:	fb 01       	movw	r30, r22
- 3b4:	55 27       	eor	r21, r21
- 3b6:	aa 27       	eor	r26, r26
- 3b8:	88 0f       	add	r24, r24
- 3ba:	99 1f       	adc	r25, r25
- 3bc:	aa 1f       	adc	r26, r26
- 3be:	a4 17       	cp	r26, r20
- 3c0:	10 f0       	brcs	.+4      	; 0x3c6 <__utoa_common+0x14>
- 3c2:	a4 1b       	sub	r26, r20
- 3c4:	83 95       	inc	r24
- 3c6:	50 51       	subi	r21, 0x10	; 16
- 3c8:	b9 f7       	brne	.-18     	; 0x3b8 <__utoa_common+0x6>
- 3ca:	a0 5d       	subi	r26, 0xD0	; 208
- 3cc:	aa 33       	cpi	r26, 0x3A	; 58
- 3ce:	08 f0       	brcs	.+2      	; 0x3d2 <__utoa_common+0x20>
- 3d0:	a9 5d       	subi	r26, 0xD9	; 217
- 3d2:	a1 93       	st	Z+, r26
- 3d4:	00 97       	sbiw	r24, 0x00	; 0
- 3d6:	79 f7       	brne	.-34     	; 0x3b6 <__utoa_common+0x4>
- 3d8:	b1 11       	cpse	r27, r1
- 3da:	b1 93       	st	Z+, r27
- 3dc:	11 92       	st	Z+, r1
- 3de:	cb 01       	movw	r24, r22
- 3e0:	00 c0       	rjmp	.+0      	; 0x3e2 <strrev>
+00000580 <__utoa_common>:
+ 580:	fb 01       	movw	r30, r22
+ 582:	55 27       	eor	r21, r21
+ 584:	aa 27       	eor	r26, r26
+ 586:	88 0f       	add	r24, r24
+ 588:	99 1f       	adc	r25, r25
+ 58a:	aa 1f       	adc	r26, r26
+ 58c:	a4 17       	cp	r26, r20
+ 58e:	10 f0       	brcs	.+4      	; 0x594 <__utoa_common+0x14>
+ 590:	a4 1b       	sub	r26, r20
+ 592:	83 95       	inc	r24
+ 594:	50 51       	subi	r21, 0x10	; 16
+ 596:	b9 f7       	brne	.-18     	; 0x586 <__utoa_common+0x6>
+ 598:	a0 5d       	subi	r26, 0xD0	; 208
+ 59a:	aa 33       	cpi	r26, 0x3A	; 58
+ 59c:	08 f0       	brcs	.+2      	; 0x5a0 <__utoa_common+0x20>
+ 59e:	a9 5d       	subi	r26, 0xD9	; 217
+ 5a0:	a1 93       	st	Z+, r26
+ 5a2:	00 97       	sbiw	r24, 0x00	; 0
+ 5a4:	79 f7       	brne	.-34     	; 0x584 <__utoa_common+0x4>
+ 5a6:	b1 11       	cpse	r27, r1
+ 5a8:	b1 93       	st	Z+, r27
+ 5aa:	11 92       	st	Z+, r1
+ 5ac:	cb 01       	movw	r24, r22
+ 5ae:	00 c0       	rjmp	.+0      	; 0x5b0 <strrev>
 
-000003e2 <strrev>:
- 3e2:	dc 01       	movw	r26, r24
- 3e4:	fc 01       	movw	r30, r24
- 3e6:	67 2f       	mov	r22, r23
- 3e8:	71 91       	ld	r23, Z+
- 3ea:	77 23       	and	r23, r23
- 3ec:	e1 f7       	brne	.-8      	; 0x3e6 <strrev+0x4>
- 3ee:	32 97       	sbiw	r30, 0x02	; 2
- 3f0:	04 c0       	rjmp	.+8      	; 0x3fa <strrev+0x18>
- 3f2:	7c 91       	ld	r23, X
- 3f4:	6d 93       	st	X+, r22
- 3f6:	70 83       	st	Z, r23
- 3f8:	62 91       	ld	r22, -Z
- 3fa:	ae 17       	cp	r26, r30
- 3fc:	bf 07       	cpc	r27, r31
- 3fe:	c8 f3       	brcs	.-14     	; 0x3f2 <strrev+0x10>
- 400:	08 95       	ret
+000005b0 <strrev>:
+ 5b0:	dc 01       	movw	r26, r24
+ 5b2:	fc 01       	movw	r30, r24
+ 5b4:	67 2f       	mov	r22, r23
+ 5b6:	71 91       	ld	r23, Z+
+ 5b8:	77 23       	and	r23, r23
+ 5ba:	e1 f7       	brne	.-8      	; 0x5b4 <strrev+0x4>
+ 5bc:	32 97       	sbiw	r30, 0x02	; 2
+ 5be:	04 c0       	rjmp	.+8      	; 0x5c8 <strrev+0x18>
+ 5c0:	7c 91       	ld	r23, X
+ 5c2:	6d 93       	st	X+, r22
+ 5c4:	70 83       	st	Z, r23
+ 5c6:	62 91       	ld	r22, -Z
+ 5c8:	ae 17       	cp	r26, r30
+ 5ca:	bf 07       	cpc	r27, r31
+ 5cc:	c8 f3       	brcs	.-14     	; 0x5c0 <strrev+0x10>
+ 5ce:	08 95       	ret
 
-00000402 <_exit>:
- 402:	f8 94       	cli
+000005d0 <_exit>:
+ 5d0:	f8 94       	cli
 
-00000404 <__stop_program>:
- 404:	ff cf       	rjmp	.-2      	; 0x404 <__stop_program>
+000005d2 <__stop_program>:
+ 5d2:	ff cf       	rjmp	.-2      	; 0x5d2 <__stop_program>

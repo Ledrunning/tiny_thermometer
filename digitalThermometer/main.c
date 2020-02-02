@@ -12,21 +12,31 @@
 #include <util/delay.h>
 #include "LCD.h"
 #include <string.h>
-#include <stdbool.h>
+#include <math.h>
 
 #define DHT_PORT        PORTD
 #define DHT_DDR         DDRD
 #define DHT_PIN         PIND
 #define DHT22_PIN 6
 #define STRING_SIZE 3
+#define DEC 10
+#define DOZEN 10
+#define TEMP_MASK 0x7FFF
+#define MINIMUM_TEMP -40
+#define MAXIMUM_TEMP 80
 
-uint8_t c=0,lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
+uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
+const int NEGATIVE_POINT = -10;
 
-void request();                /* Microcontroller send start pulse/request */
-void response();				/* receive response from DHT11 */
-uint8_t receive_data();			/* receive data */
+void print_negative_temperature(char* tBuffer, int negativeTemp); /* print temperature lower than 0 C */
+void print_humidity(char* buffer);								  /* print humidity */
+void print_temperature(char* buffer, uint16_t temp_after_point);  /* print temperature above than 0 C */
+void request();													  /* Microcontroller send start pulse/request */
+void response();												  /* receive response from DHT11 */
+uint8_t receive_data();											  /* receive data */
 int get_checksum();
+void print_error();
 
 // if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
 // Маски достаточно, но нужна маска & 0x7F чтобы знаковый бит обнулить
@@ -35,9 +45,10 @@ int get_checksum();
 //  Signtemp = -(0x7FFF & temp)
 int main(void) {
 	
-	char buffer[STRING_SIZE];
-	int temp_buffer;
-    uint16_t temp_buffer_after_point;
+	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
+	uint16_t temp_buffer;
+	uint16_t temp_buffer_after_point;
+	int negativeTemp;
 
 	lcdInit();
 	lcdClear();
@@ -48,71 +59,158 @@ int main(void) {
 
 		request();		/* send start pulse */
 		response();		/* receive response */
+		/*
+		5 bytes of DHT data are as follows:
+		[0] RH integral
+		[1] RH decimal
+		[2] Temp integral
+		[3] Temp decimal
+		[4] checksum is the sum of all four bytes AND 255
+		*/
 		lowByteRh=receive_data();	/* store first eight bit in I_RH */
 		highByteRh=receive_data();	/* store next eight bit in D_RH */
 		lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
 		highByteTemp=receive_data();	/* store next eight bit in D_Temp */
 		checkSum=receive_data();/* store next eight bit in CheckSum */
 		
-		if (get_checksum() != checkSum)
-		{
-			lcdGotoXY(0,1);
-			lcdPuts("Error");
+		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
+		if ((get_checksum() & 255) != checkSum) {
+			print_error();
 		}
-		else
-		{
-			lcdClear();
-			lcdGotoXY(0,0);
-			lcdPuts("H=");
-			lcdGotoXY(0,3);
-			humidityResult = (lowByteRh * 256 + highByteRh ) / 10;
-			itoa(humidityResult, buffer, 10);
-			lcdPuts(buffer);
-			
-			lcdGotoXY(1,0);
-			lcdPuts("T=");
-			lcdGotoXY(1,3);
-			
+		else {
+			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+			print_humidity(hBuffer);
 			temperatureResult = (lowByteTemp * 256 + highByteTemp );
-			temp_buffer = temperatureResult;
-						
-			itoa(temperatureResult, buffer, 10);
-			lcdPuts(buffer);
-			lcdGotoXY(1,5);
-			lcdPuts(".");
-			lcdGotoXY(1,6);
-			temp_buffer_after_point = temp_buffer % 10;
-			itoa(temp_buffer_after_point, buffer, 10);
-			lcdPuts(buffer);
-			lcdGotoXY(1,8);
-			lcdPuts("C");
+			
+			if(temperatureResult > TEMP_MASK) {
+				negativeTemp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+				print_negative_temperature(tBuffer, negativeTemp);
+			}
+			else {
+				temp_buffer = temperatureResult;
+				temp_buffer_after_point = temp_buffer % DOZEN;
+				print_temperature(tBuffer, temp_buffer_after_point);
+			}
 			
 		}
 		_delay_ms(1000);
 	}
 }
 
-void request()                /* Microcontroller send start pulse/request */
+void print_humidity(char* buffer)
 {
+	if(humidityResult < 100) {
+		lcdGotoXY(0,0);
+		lcdPuts("H= ");
+		lcdGotoXY(0,3);
+		itoa(humidityResult, buffer, DOZEN);
+		lcdPuts(buffer);
+		lcdGotoXY(0, 5);
+		lcdPuts("%");
+	}
+	else {
+		lcdGotoXY(0,0);
+		lcdPuts("H=");
+		lcdGotoXY(0,2);
+		itoa(humidityResult, buffer, DOZEN);
+		lcdPuts(buffer);
+		lcdGotoXY(0, 5);
+		lcdPuts("%");
+	}
+}
+
+void print_negative_temperature(char* buffer, int negativeTemp) {
+
+	uint16_t negativeData = negativeTemp/DEC;
+	
+	if((abs(negativeTemp) != abs(MINIMUM_TEMP))) {
+		if(abs(negativeData) < abs(NEGATIVE_POINT)) {
+			lcdGotoXY(1,0);
+			lcdPuts("T= ");
+			lcdGotoXY(1,3);
+			itoa(negativeData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,5);
+			lcdPuts(" ");
+			lcdGotoXY(1,6);
+			lcdPuts("C ");
+		}
+		else {
+			lcdGotoXY(1,0);
+			lcdPuts("T=");
+			lcdGotoXY(1,2);
+			itoa(negativeData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,5);
+			lcdPuts("C ");
+		}
+	}
+	else {
+		print_error();
+	}
+}
+
+void print_temperature(char* buffer, uint16_t temp_after_point)
+{
+	uint16_t temperatureData = temperatureResult / DOZEN;
+	
+	if(temperatureData != MAXIMUM_TEMP) {
+		
+		if(temperatureData < DEC) {
+			lcdGotoXY(1,0);
+			lcdPuts("T= ");
+			lcdGotoXY(1,3);
+			itoa(temperatureData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,4);
+			lcdPuts(".");
+			lcdGotoXY(1,5);
+			itoa(temp_after_point, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,6);
+			lcdPuts("C");
+		}
+		else {
+			lcdGotoXY(1,0);
+			lcdPuts("T=");
+			lcdGotoXY(1,2);
+			itoa(temperatureData, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,4);
+			lcdPuts(".");
+			lcdGotoXY(1,5);
+			itoa(temp_after_point, buffer, DEC);
+			lcdPuts(buffer);
+			lcdGotoXY(1,6);
+			lcdPuts("C");
+		}
+	}
+	else {
+		print_error();
+	}
+	
+}
+
+void request()  {
+	
 	DDRD |= (1<<DHT22_PIN);
 	PORTD &= ~(1<<DHT22_PIN);    /* set to low pin */
 	_delay_ms(20);            /* wait for 20ms */
 	PORTD |= (1<<DHT22_PIN);	/* set to high pin */
 }
 
-void response()				/* receive response from DHT11 */
-{
+void response()	{
+	
 	DDRD &= ~(1<<DHT22_PIN);
 	while(PIND & (1<<DHT22_PIN));
 	while((PIND & (1<<DHT22_PIN))==0);
 	while(PIND & (1<<DHT22_PIN));
 }
 
-uint8_t receive_data()			/* receive data */
-{
+uint8_t receive_data() {
+	
 	int q;
-	for (q=0; q<8; q++)
-	{
+	for (q=0; q<8; q++)	{
 		while((PIND & (1<<DHT22_PIN)) == 0);  /* check received bit 0 or 1 */
 		_delay_us(30);
 		if(PIND & (1<<DHT22_PIN))/* if high pulse is greater than 30ms */
@@ -124,7 +222,14 @@ uint8_t receive_data()			/* receive data */
 	return c;
 }
 
-int get_checksum(){
+int get_checksum() {
 	
 	return lowByteRh + highByteRh + lowByteTemp + highByteTemp;
+}
+
+void print_error() {
+	lcdGotoXY(0,0);
+	lcdPuts("Sens    ");
+	lcdGotoXY(1,0);
+	lcdPuts("Err     ");
 }
