@@ -24,6 +24,7 @@
 #define TEMP_MASK 0x7FFF
 #define MINIMUM_TEMP -40
 #define MAXIMUM_TEMP 80
+#define ZERO_POINT 0
 
 uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
@@ -121,7 +122,7 @@ void print_humidity(char* buffer)
 
 void print_negative_temperature(char* buffer, int negativeTemp) {
 
-	uint16_t negativeData = negativeTemp/DEC;
+	int negativeData = negativeTemp/DEC;
 	
 	if((abs(negativeTemp) != abs(MINIMUM_TEMP))) {
 		if(abs(negativeData) < abs(NEGATIVE_POINT)) {
@@ -134,6 +135,21 @@ void print_negative_temperature(char* buffer, int negativeTemp) {
 			lcdPuts(" ");
 			lcdGotoXY(1,6);
 			lcdPuts("C ");
+			
+			if(negativeData == ZERO_POINT){
+				
+				lcdGotoXY(1,0);
+				lcdPuts("T= ");
+				lcdGotoXY(1,3);
+				itoa(negativeData, buffer, DEC);
+				lcdPuts(buffer);
+				lcdGotoXY(1,4);
+				lcdPuts(".");
+				lcdGotoXY(1,5);
+				lcdPuts("0");
+				lcdGotoXY(1,6);
+				lcdPuts("C ");
+			}
 		}
 		else {
 			lcdGotoXY(1,0);
@@ -188,7 +204,6 @@ void print_temperature(char* buffer, uint16_t temp_after_point)
 	else {
 		print_error();
 	}
-	
 }
 
 void request()  {
