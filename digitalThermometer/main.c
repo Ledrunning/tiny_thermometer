@@ -17,7 +17,7 @@
 #define DHT_PORT        PORTD
 #define DHT_DDR         DDRD
 #define DHT_PIN         PIND
-#define DHT22_PIN 6
+#define DHT22_PIN 5
 #define STRING_SIZE 3
 #define DEC 10
 #define DOZEN 10
@@ -39,11 +39,6 @@ uint8_t receive_data();											  /* receive data */
 int get_checksum();
 void print_error();
 
-// if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
-// Маски достаточно, но нужна маска & 0x7F чтобы знаковый бит обнулить
-//Ну или тупо 
-//if (temp > 0x7FFF)
-//  Signtemp = -(0x7FFF & temp)
 int main(void) {
 	
 	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
@@ -52,6 +47,11 @@ int main(void) {
 	int negativeTemp;
 
 	lcdInit();
+	lcdGotoXY(0,0);
+	lcdPuts("Tiny    ");
+	lcdGotoXY(1,0);
+	lcdPuts("Term    ");
+	_delay_ms(3000);
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
