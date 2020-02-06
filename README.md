@@ -6,4 +6,5 @@
 * Repository contains project in Atmel Studio 7 with source code 
 * Simulation project in Proteus 8
 
-![](name-of-sim.gif)
+* Program Memory Usage 	:	1624 bytes   79,3 % Full
+* Data Memory Usage 		:	54 bytes   42,2 % Full

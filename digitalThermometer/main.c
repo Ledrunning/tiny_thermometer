@@ -17,13 +17,14 @@
 #define DHT_PORT        PORTD
 #define DHT_DDR         DDRD
 #define DHT_PIN         PIND
-#define DHT22_PIN 6
+#define DHT22_PIN 5
 #define STRING_SIZE 3
 #define DEC 10
 #define DOZEN 10
 #define TEMP_MASK 0x7FFF
 #define MINIMUM_TEMP -40
 #define MAXIMUM_TEMP 80
+#define ZERO_POINT 0
 
 uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
@@ -38,11 +39,6 @@ uint8_t receive_data();											  /* receive data */
 int get_checksum();
 void print_error();
 
-// if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
-// Маски достаточно, но нужна маска & 0x7F чтобы знаковый бит обнулить
-//Ну или тупо 
-//if (temp > 0x7FFF)
-//  Signtemp = -(0x7FFF & temp)
 int main(void) {
 	
 	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
@@ -51,6 +47,11 @@ int main(void) {
 	int negativeTemp;
 
 	lcdInit();
+	lcdGotoXY(0,0);
+	lcdPuts("Tiny    ");
+	lcdGotoXY(1,0);
+	lcdPuts("Term    ");
+	_delay_ms(3000);
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
@@ -121,7 +122,7 @@ void print_humidity(char* buffer)
 
 void print_negative_temperature(char* buffer, int negativeTemp) {
 
-	uint16_t negativeData = negativeTemp/DEC;
+	int negativeData = negativeTemp/DEC;
 	
 	if((abs(negativeTemp) != abs(MINIMUM_TEMP))) {
 		if(abs(negativeData) < abs(NEGATIVE_POINT)) {
@@ -134,6 +135,21 @@ void print_negative_temperature(char* buffer, int negativeTemp) {
 			lcdPuts(" ");
 			lcdGotoXY(1,6);
 			lcdPuts("C ");
+			
+			if(negativeData == ZERO_POINT){
+				
+				lcdGotoXY(1,0);
+				lcdPuts("T= ");
+				lcdGotoXY(1,3);
+				itoa(negativeData, buffer, DEC);
+				lcdPuts(buffer);
+				lcdGotoXY(1,4);
+				lcdPuts(".");
+				lcdGotoXY(1,5);
+				lcdPuts("0");
+				lcdGotoXY(1,6);
+				lcdPuts("C ");
+			}
 		}
 		else {
 			lcdGotoXY(1,0);
@@ -188,7 +204,6 @@ void print_temperature(char* buffer, uint16_t temp_after_point)
 	else {
 		print_error();
 	}
-	
 }
 
 void request()  {
