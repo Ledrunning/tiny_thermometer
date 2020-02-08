@@ -17,7 +17,7 @@
 #define DHT_PORT        PORTD
 #define DHT_DDR         DDRD
 #define DHT_PIN         PIND
-#define DHT22_PIN 5
+#define DHT22_PIN 6
 #define STRING_SIZE 3
 #define DEC 10
 #define DOZEN 10
@@ -45,6 +45,13 @@ int main(void) {
 	uint16_t temp_buffer;
 	uint16_t temp_buffer_after_point;
 	int negativeTemp;
+	
+	unsigned char PWM_val = 0;		// 8-bit PWM value
+	unsigned char up_dn = 0;		// up down count flag
+	
+	DDRD   |= (1 << PIND5);                   // PWM output on PB2
+	TCCR0A = (0 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
+	TCCR0B = (1 << CS01);   // clock source = CLK/8, start PWM
 
 	lcdInit();
 	lcdGotoXY(0,0);
@@ -57,6 +64,14 @@ int main(void) {
 	lcdSetCursor(LCD_CURSOR_OFF);
 	
 	while (1) {
+
+/*
+		if ((PWM_val == 255) || (PWM_val == 0)) {
+			up_dn ^= 0x01;      // toggle count direction flag
+		}*/
+PWM_val++;
+		_delay_ms(1000);
+		OCR0B  = PWM_val;       // write new PWM value
 
 		request();		/* send start pulse */
 		response();		/* receive response */
