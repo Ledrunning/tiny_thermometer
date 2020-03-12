@@ -25,11 +25,13 @@
 #define MINIMUM_TEMP -40
 #define MAXIMUM_TEMP 80
 #define ZERO_POINT 0
+#define START_DELAY 3000
 
 uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
 const int NEGATIVE_POINT = -10;
 
+void init();
 void print_negative_temperature(char* tBuffer, int negativeTemp); /* print temperature lower than 0 C */
 void print_humidity(char* buffer);								  /* print humidity */
 void print_temperature(char* buffer, uint16_t temp_after_point);  /* print temperature above than 0 C */
@@ -41,37 +43,22 @@ void print_error();
 
 int main(void) {
 	
-	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
+	char t_buffer[STRING_SIZE], h_buffer[STRING_SIZE];
 	uint16_t temp_buffer;
 	uint16_t temp_buffer_after_point;
-	int negativeTemp;
+	int negative_temp;
 	
-	unsigned char PWM_val = 0;		// 8-bit PWM value
-	unsigned char up_dn = 0;		// up down count flag
-	
-	DDRD   |= (1 << PIND5);                   // PWM output on PB2
-	TCCR0A = (0 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
-	TCCR0B = (1 << CS01);   // clock source = CLK/8, start PWM
-
 	lcdInit();
 	lcdGotoXY(0,0);
 	lcdPuts("Tiny    ");
 	lcdGotoXY(1,0);
 	lcdPuts("Term    ");
-	_delay_ms(3000);
+	_delay_ms(START_DELAY);
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
 	
 	while (1) {
-
-/*
-		if ((PWM_val == 255) || (PWM_val == 0)) {
-			up_dn ^= 0x01;      // toggle count direction flag
-		}*/
-PWM_val++;
-		_delay_ms(1000);
-		OCR0B  = PWM_val;       // write new PWM value
 
 		request();		/* send start pulse */
 		response();		/* receive response */
@@ -95,17 +82,17 @@ PWM_val++;
 		}
 		else {
 			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
-			print_humidity(hBuffer);
+			print_humidity(h_buffer);
 			temperatureResult = (lowByteTemp * 256 + highByteTemp );
 			
 			if(temperatureResult > TEMP_MASK) {
-				negativeTemp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
-				print_negative_temperature(tBuffer, negativeTemp);
+				negative_temp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+				print_negative_temperature(t_buffer, negative_temp);
 			}
 			else {
 				temp_buffer = temperatureResult;
 				temp_buffer_after_point = temp_buffer % DOZEN;
-				print_temperature(tBuffer, temp_buffer_after_point);
+				print_temperature(t_buffer, temp_buffer_after_point);
 			}
 			
 		}
@@ -113,8 +100,7 @@ PWM_val++;
 	}
 }
 
-void print_humidity(char* buffer)
-{
+void print_humidity(char* buffer) {
 	if(humidityResult < 100) {
 		lcdGotoXY(0,0);
 		lcdPuts("H= ");
