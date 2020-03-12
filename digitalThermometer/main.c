@@ -41,6 +41,14 @@ uint8_t receive_data();											  /* receive data */
 int get_checksum();
 void print_error();
 
+void USART_Init( unsigned int baudrate );
+void send_Uart(unsigned char uart_data);
+void send_Uart_str(unsigned char *s);
+void send_int_Uart(unsigned int c);
+
+unsigned char USART_Receive( void );
+void USART_Transmit( unsigned char data );
+
 int main(void) {
 	
 	char t_buffer[STRING_SIZE], h_buffer[STRING_SIZE];
@@ -57,8 +65,11 @@ int main(void) {
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
+	USART_Init(47); // 19200
 	
 	while (1) {
+
+      send_int_Uart(21);
 
 		request();		/* send start pulse */
 		response();		/* receive response */
@@ -248,4 +259,42 @@ void print_error() {
 	lcdPuts("Sens    ");
 	lcdGotoXY(1,0);
 	lcdPuts("Err     ");
+}
+
+void USART_Init( unsigned int baudrate ) // USART Initialization
+{
+	UBRRH = (unsigned char) (baudrate>>8);
+	UBRRL = (unsigned char) baudrate;
+	UCSRA = (1<<U2X); //Удвоение скорости
+	UCSRB = ( ( 1 << RXEN ) | ( 1 << TXEN ) ); // Confirm RX/TX USART
+	UCSRC = (1<<USBS) | (3<<UCSZ0);
+}
+
+void send_Uart_str(unsigned char *s) //	Send string;
+{
+	while (*s != 0) USART_Transmit(*s++);
+}
+
+void send_int_Uart(unsigned int c)   //	Send number from 0000 to 9999;
+{
+	unsigned char temp;
+	c=c%10000;
+	temp=c/100;
+	USART_Transmit(temp/10+'0');
+	USART_Transmit(temp%10+'0');
+	temp=c%100;
+	USART_Transmit(temp/10+'0');
+	USART_Transmit(temp%10+'0');
+}
+
+unsigned char USART_Receive( void ) //Функция приема данных
+{
+	while ( !(UCSRA & (1<<RXC)) ); 	//Ожидание приема символа
+	return UDR; //Возврат символа
+}
+
+void USART_Transmit( unsigned char data ) //Функция отправки данных
+{
+	while ( !(UCSRA & (1<<UDRE)) ); //Ожидание опустошения буфера приема
+	UDR = data; //Начало передачи данных
 }
