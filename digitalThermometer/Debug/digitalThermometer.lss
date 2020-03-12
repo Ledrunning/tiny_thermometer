@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000002dc  00000000  00000000  00004024  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000005b1  00000000  00000000  00004300  2**0
+ 10 .debug_str    000005bc  00000000  00000000  00004300  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000013cd  00000000  00000000  000048b1  2**0
+ 11 .debug_loc    000013cd  00000000  00000000  000048bc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000108  00000000  00000000  00005c7e  2**0
+ 12 .debug_ranges 00000108  00000000  00000000  00005c89  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -298,12 +298,12 @@ void lcdPuts(char *str) {
  194:	08 95       	ret
 
 00000196 <print_humidity>:
-		_delay_ms(1000);
 	}
+	_delay_ms(1000);
 }
+	}
 
-void print_humidity(char* buffer)
-{
+void print_humidity(char* buffer) {
  196:	cf 93       	push	r28
  198:	df 93       	push	r29
  19a:	ec 01       	movw	r28, r24
@@ -389,9 +389,9 @@ void print_humidity(char* buffer)
 void request()  {
 	
 	DDRD |= (1<<DHT22_PIN);
- 216:	8d 9a       	sbi	0x11, 5	; 17
+ 216:	8e 9a       	sbi	0x11, 6	; 17
 	PORTD &= ~(1<<DHT22_PIN);    /* set to low pin */
- 218:	95 98       	cbi	0x12, 5	; 18
+ 218:	96 98       	cbi	0x12, 6	; 18
  21a:	8f e3       	ldi	r24, 0x3F	; 63
  21c:	9c e9       	ldi	r25, 0x9C	; 156
  21e:	01 97       	sbiw	r24, 0x01	; 1
@@ -400,7 +400,7 @@ void request()  {
  224:	00 00       	nop
 	_delay_ms(20);            /* wait for 20ms */
 	PORTD |= (1<<DHT22_PIN);	/* set to high pin */
- 226:	95 9a       	sbi	0x12, 5	; 18
+ 226:	96 9a       	sbi	0x12, 6	; 18
  228:	08 95       	ret
 
 0000022a <response>:
@@ -409,15 +409,15 @@ void request()  {
 void response()	{
 	
 	DDRD &= ~(1<<DHT22_PIN);
- 22a:	8d 98       	cbi	0x11, 5	; 17
+ 22a:	8e 98       	cbi	0x11, 6	; 17
 	while(PIND & (1<<DHT22_PIN));
- 22c:	85 99       	sbic	0x10, 5	; 16
+ 22c:	86 99       	sbic	0x10, 6	; 16
  22e:	fe cf       	rjmp	.-4      	; 0x22c <response+0x2>
 	while((PIND & (1<<DHT22_PIN))==0);
- 230:	85 9b       	sbis	0x10, 5	; 16
+ 230:	86 9b       	sbis	0x10, 6	; 16
  232:	fe cf       	rjmp	.-4      	; 0x230 <response+0x6>
 	while(PIND & (1<<DHT22_PIN));
- 234:	85 99       	sbic	0x10, 5	; 16
+ 234:	86 99       	sbic	0x10, 6	; 16
  236:	fe cf       	rjmp	.-4      	; 0x234 <response+0xa>
 }
  238:	08 95       	ret
@@ -431,7 +431,7 @@ uint8_t receive_data() {
 	int q;
 	for (q=0; q<8; q++)	{
 		while((PIND & (1<<DHT22_PIN)) == 0);  /* check received bit 0 or 1 */
- 23e:	85 9b       	sbis	0x10, 5	; 16
+ 23e:	86 9b       	sbis	0x10, 6	; 16
  240:	fe cf       	rjmp	.-4      	; 0x23e <receive_data+0x4>
 	#else
 		//round up by default
@@ -444,7 +444,7 @@ uint8_t receive_data() {
  246:	f1 f7       	brne	.-4      	; 0x244 <receive_data+0xa>
 		_delay_us(30);
 		if(PIND & (1<<DHT22_PIN))/* if high pulse is greater than 30ms */
- 248:	85 9b       	sbis	0x10, 5	; 16
+ 248:	86 9b       	sbis	0x10, 6	; 16
  24a:	07 c0       	rjmp	.+14     	; 0x25a <receive_data+0x20>
 		c = (c<<1)|(0x01);	/* then its logic HIGH */
  24c:	20 91 9e 00 	lds	r18, 0x009E	; 0x80009e <__data_end>
@@ -458,7 +458,7 @@ uint8_t receive_data() {
  25e:	22 0f       	add	r18, r18
  260:	20 93 9e 00 	sts	0x009E, r18	; 0x80009e <__data_end>
 		while(PIND & (1<<DHT22_PIN));
- 264:	85 99       	sbic	0x10, 5	; 16
+ 264:	86 99       	sbic	0x10, 6	; 16
  266:	fe cf       	rjmp	.-4      	; 0x264 <receive_data+0x2a>
  268:	01 97       	sbiw	r24, 0x01	; 1
 }
@@ -854,11 +854,11 @@ void print_temperature(char* buffer, uint16_t temp_after_point)
  492:	08 95       	ret
 
 00000494 <main>:
-// if (highByteTemp >> 7 & 1) { temperatureResult *= -1; }
-// Маски достаточно, но нужна маска & 0x7F чтобы знаковый бит обнулить
-//Ну или тупо 
-//if (temp > 0x7FFF)
-//  Signtemp = -(0x7FFF & temp)
+void response();												  /* receive response from DHT11 */
+uint8_t receive_data();											  /* receive data */
+int get_checksum();
+void print_error();
+
 int main(void) {
  494:	cf 93       	push	r28
  496:	df 93       	push	r29
@@ -866,11 +866,11 @@ int main(void) {
  49a:	dd 27       	eor	r29, r29
  49c:	c6 50       	subi	r28, 0x06	; 6
  49e:	cd bf       	out	0x3d, r28	; 61
-	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
+	char t_buffer[STRING_SIZE], h_buffer[STRING_SIZE];
 	uint16_t temp_buffer;
 	uint16_t temp_buffer_after_point;
-	int negativeTemp;
-
+	int negative_temp;
+	
 	lcdInit();
  4a0:	09 de       	rcall	.-1006   	; 0xb4 <lcdInit>
 	lcdGotoXY(0,0);
@@ -896,15 +896,15 @@ int main(void) {
 
 	__builtin_avr_delay_cycles(__ticks_dc);
  4ba:	2f ef       	ldi	r18, 0xFF	; 255
- 4bc:	89 e6       	ldi	r24, 0x69	; 105
- 4be:	98 e1       	ldi	r25, 0x18	; 24
+ 4bc:	8d e3       	ldi	r24, 0x3D	; 61
+ 4be:	99 e4       	ldi	r25, 0x49	; 73
  4c0:	21 50       	subi	r18, 0x01	; 1
  4c2:	80 40       	sbci	r24, 0x00	; 0
  4c4:	90 40       	sbci	r25, 0x00	; 0
  4c6:	e1 f7       	brne	.-8      	; 0x4c0 <main+0x2c>
  4c8:	00 c0       	rjmp	.+0      	; 0x4ca <main+0x36>
  4ca:	00 00       	nop
-	_delay_ms(1000);
+	_delay_ms(START_DELAY);
 	lcdClear();
  4cc:	35 de       	rcall	.-918    	; 0x138 <lcdClear>
 	lcdSetDisplay(LCD_DISPLAY_ON);
@@ -913,12 +913,12 @@ int main(void) {
 	lcdSetCursor(LCD_CURSOR_OFF);
  4d2:	80 e0       	ldi	r24, 0x00	; 0
  4d4:	1d de       	rcall	.-966    	; 0x110 <lcdSetCursor>
-		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
-		if ((get_checksum() & 255) != checkSum) {
-			print_error();
-		}
-		else {
-			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+	/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
+	if ((get_checksum() & 255) != checkSum) {
+		print_error();
+	}
+	else {
+		humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
  4d6:	0f 2e       	mov	r0, r31
  4d8:	fa e0       	ldi	r31, 0x0A	; 10
  4da:	ef 2e       	mov	r14, r31
@@ -929,34 +929,34 @@ int main(void) {
 	
 	while (1) {
 
-		request();		/* send start pulse */
+	request();		/* send start pulse */
  4e0:	9a de       	rcall	.-716    	; 0x216 <request>
-		response();		/* receive response */
+	response();		/* receive response */
  4e2:	a3 de       	rcall	.-698    	; 0x22a <response>
-		[1] RH decimal
-		[2] Temp integral
-		[3] Temp decimal
-		[4] checksum is the sum of all four bytes AND 255
-		*/
-		lowByteRh=receive_data();	/* store first eight bit in I_RH */
+	[1] RH decimal
+	[2] Temp integral
+	[3] Temp decimal
+	[4] checksum is the sum of all four bytes AND 255
+	*/
+	lowByteRh=receive_data();	/* store first eight bit in I_RH */
  4e4:	aa de       	rcall	.-684    	; 0x23a <receive_data>
  4e6:	80 93 a0 00 	sts	0x00A0, r24	; 0x8000a0 <lowByteRh>
-		highByteRh=receive_data();	/* store next eight bit in D_RH */
+	highByteRh=receive_data();	/* store next eight bit in D_RH */
  4ea:	a7 de       	rcall	.-690    	; 0x23a <receive_data>
  4ec:	80 93 a4 00 	sts	0x00A4, r24	; 0x8000a4 <highByteRh>
-		lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
+	lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
  4f0:	a4 de       	rcall	.-696    	; 0x23a <receive_data>
  4f2:	80 93 9f 00 	sts	0x009F, r24	; 0x80009f <lowByteTemp>
-		highByteTemp=receive_data();	/* store next eight bit in D_Temp */
+	highByteTemp=receive_data();	/* store next eight bit in D_Temp */
  4f6:	a1 de       	rcall	.-702    	; 0x23a <receive_data>
  4f8:	80 93 a3 00 	sts	0x00A3, r24	; 0x8000a3 <highByteTemp>
-		checkSum=receive_data();/* store next eight bit in CheckSum */
+	checkSum=receive_data();/* store next eight bit in CheckSum */
  4fc:	9e de       	rcall	.-708    	; 0x23a <receive_data>
  4fe:	18 2f       	mov	r17, r24
  500:	80 93 a5 00 	sts	0x00A5, r24	; 0x8000a5 <checkSum>
-		
-		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
-		if ((get_checksum() & 255) != checkSum) {
+	
+	/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
+	if ((get_checksum() & 255) != checkSum) {
  504:	b6 de       	rcall	.-660    	; 0x272 <get_checksum>
  506:	99 27       	eor	r25, r25
  508:	21 2f       	mov	r18, r17
@@ -964,12 +964,12 @@ int main(void) {
  50c:	82 17       	cp	r24, r18
  50e:	93 07       	cpc	r25, r19
  510:	11 f0       	breq	.+4      	; 0x516 <main+0x82>
-			print_error();
+		print_error();
  512:	bf de       	rcall	.-642    	; 0x292 <print_error>
  514:	30 c0       	rjmp	.+96     	; 0x576 <main+0xe2>
-		}
-		else {
-			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+	}
+	else {
+		humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
  516:	80 91 a0 00 	lds	r24, 0x00A0	; 0x8000a0 <lowByteRh>
  51a:	90 e0       	ldi	r25, 0x00	; 0
  51c:	98 2f       	mov	r25, r24
@@ -981,11 +981,11 @@ int main(void) {
  52a:	43 d0       	rcall	.+134    	; 0x5b2 <__divmodhi4>
  52c:	70 93 a7 00 	sts	0x00A7, r23	; 0x8000a7 <humidityResult+0x1>
  530:	60 93 a6 00 	sts	0x00A6, r22	; 0x8000a6 <humidityResult>
-			print_humidity(hBuffer);
+		print_humidity(h_buffer);
  534:	ce 01       	movw	r24, r28
  536:	04 96       	adiw	r24, 0x04	; 4
  538:	2e de       	rcall	.-932    	; 0x196 <print_humidity>
-			temperatureResult = (lowByteTemp * 256 + highByteTemp );
+		temperatureResult = (lowByteTemp * 256 + highByteTemp );
  53a:	80 91 9f 00 	lds	r24, 0x009F	; 0x80009f <lowByteTemp>
  53e:	90 e0       	ldi	r25, 0x00	; 0
  540:	98 2f       	mov	r25, r24
@@ -995,12 +995,12 @@ int main(void) {
  54a:	91 1d       	adc	r25, r1
  54c:	90 93 a2 00 	sts	0x00A2, r25	; 0x8000a2 <temperatureResult+0x1>
  550:	80 93 a1 00 	sts	0x00A1, r24	; 0x8000a1 <temperatureResult>
-			
-			if(temperatureResult > TEMP_MASK) {
+		
+		if(temperatureResult > TEMP_MASK) {
  554:	99 23       	and	r25, r25
  556:	4c f4       	brge	.+18     	; 0x56a <main+0xd6>
-				negativeTemp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
-				print_negative_temperature(tBuffer, negativeTemp);
+			negative_temp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+			print_negative_temperature(t_buffer, negative_temp);
  558:	9f 77       	andi	r25, 0x7F	; 127
  55a:	66 27       	eor	r22, r22
  55c:	77 27       	eor	r23, r23
@@ -1010,11 +1010,11 @@ int main(void) {
  564:	01 96       	adiw	r24, 0x01	; 1
  566:	a2 de       	rcall	.-700    	; 0x2ac <print_negative_temperature>
  568:	06 c0       	rjmp	.+12     	; 0x576 <main+0xe2>
-			}
-			else {
-				temp_buffer = temperatureResult;
-				temp_buffer_after_point = temp_buffer % DOZEN;
-				print_temperature(tBuffer, temp_buffer_after_point);
+		}
+		else {
+			temp_buffer = temperatureResult;
+			temp_buffer_after_point = temp_buffer % DOZEN;
+			print_temperature(t_buffer, temp_buffer_after_point);
  56a:	b7 01       	movw	r22, r14
  56c:	0e d0       	rcall	.+28     	; 0x58a <__udivmodhi4>
  56e:	bc 01       	movw	r22, r24

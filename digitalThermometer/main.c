@@ -17,7 +17,7 @@
 #define DHT_PORT        PORTD
 #define DHT_DDR         DDRD
 #define DHT_PIN         PIND
-#define DHT22_PIN 5
+#define DHT22_PIN 6
 #define STRING_SIZE 3
 #define DEC 10
 #define DOZEN 10
@@ -25,11 +25,13 @@
 #define MINIMUM_TEMP -40
 #define MAXIMUM_TEMP 80
 #define ZERO_POINT 0
+#define START_DELAY 3000
 
 uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
 uint16_t temperatureResult, humidityResult;
 const int NEGATIVE_POINT = -10;
 
+void init();
 void print_negative_temperature(char* tBuffer, int negativeTemp); /* print temperature lower than 0 C */
 void print_humidity(char* buffer);								  /* print humidity */
 void print_temperature(char* buffer, uint16_t temp_after_point);  /* print temperature above than 0 C */
@@ -41,17 +43,17 @@ void print_error();
 
 int main(void) {
 	
-	char tBuffer[STRING_SIZE], hBuffer[STRING_SIZE];
+	char t_buffer[STRING_SIZE], h_buffer[STRING_SIZE];
 	uint16_t temp_buffer;
 	uint16_t temp_buffer_after_point;
-	int negativeTemp;
-
+	int negative_temp;
+	
 	lcdInit();
 	lcdGotoXY(0,0);
 	lcdPuts("Tiny    ");
 	lcdGotoXY(1,0);
 	lcdPuts("Term    ");
-	_delay_ms(3000);
+	_delay_ms(START_DELAY);
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
@@ -80,17 +82,17 @@ int main(void) {
 		}
 		else {
 			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
-			print_humidity(hBuffer);
+			print_humidity(h_buffer);
 			temperatureResult = (lowByteTemp * 256 + highByteTemp );
 			
 			if(temperatureResult > TEMP_MASK) {
-				negativeTemp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
-				print_negative_temperature(tBuffer, negativeTemp);
+				negative_temp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+				print_negative_temperature(t_buffer, negative_temp);
 			}
 			else {
 				temp_buffer = temperatureResult;
 				temp_buffer_after_point = temp_buffer % DOZEN;
-				print_temperature(tBuffer, temp_buffer_after_point);
+				print_temperature(t_buffer, temp_buffer_after_point);
 			}
 			
 		}
@@ -98,8 +100,7 @@ int main(void) {
 	}
 }
 
-void print_humidity(char* buffer)
-{
+void print_humidity(char* buffer) {
 	if(humidityResult < 100) {
 		lcdGotoXY(0,0);
 		lcdPuts("H= ");
