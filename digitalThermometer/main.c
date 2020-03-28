@@ -41,13 +41,12 @@ uint8_t receive_data();											  /* receive data */
 int get_checksum();
 void print_error();
 
-void USART_Init( unsigned int baudrate );
-void send_Uart(unsigned char uart_data);
-void send_Uart_str(unsigned char *s);
-void send_int_Uart(unsigned int c);
-
-unsigned char usart_receive( void );
-void usart_transmit( unsigned char data );
+void usart_init( unsigned int baudrate );						  /* USART Initialization */
+void send_to_usart(unsigned char uart_data); 
+void send_str_to_usart(unsigned char *s);						  /* Send string */
+void send_int_to_uart(unsigned int c);							  /* Send number from 0000 to 9999 */
+unsigned char usart_receive( void );							  /* receive data */
+void usart_transmit( unsigned char data );						  /* send data */
 
 int main(void) {
 	
@@ -65,7 +64,7 @@ int main(void) {
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
-	//USART_Init(47); // 19200
+	usart_init(47); // 19200
 	
 	while (1) {
 
@@ -261,8 +260,7 @@ void print_error() {
 	lcdPuts("Err     ");
 }
 
-void USART_Init( unsigned int baudrate ) /* USART Initialization */
-{
+void usart_init( unsigned int baudrate ) {
 	UBRRH = (unsigned char) (baudrate>>8);
 	UBRRL = (unsigned char) baudrate;
 	UCSRA = (1<<U2X); /* double speed */
@@ -270,13 +268,11 @@ void USART_Init( unsigned int baudrate ) /* USART Initialization */
 	UCSRC = (1<<USBS) | (3<<UCSZ0);
 }
 
-void send_Uart_str(unsigned char *s) /*	Send string */
-{
+void send_str_to_usart(unsigned char *s) {
 	while (*s != 0) usart_transmit(*s++);
 }
 
-void send_int_Uart(unsigned int c)   /*	Send number from 0000 to 9999 */
-{
+void send_int_to_uart(unsigned int c) {
 	unsigned char temp;
 	c=c%10000;
 	temp=c/100;
@@ -287,14 +283,12 @@ void send_int_Uart(unsigned int c)   /*	Send number from 0000 to 9999 */
 	usart_transmit(temp%10+'0');
 }
 
-unsigned char usart_receive( void ) /* receive data */
-{
+unsigned char usart_receive( void ) {
 	while ( !(UCSRA & (1<<RXC)) ); 	/* waiting for char receiving */
 	return UDR; 
 }
 
-void usart_transmit( uint8_t data ) /* send data */
-{
+void usart_transmit( uint8_t data ) {
 	while ( !(UCSRA & (1<<UDRE)) ); /* waiting for buffer clear */
 	UDR = data; 
 }
