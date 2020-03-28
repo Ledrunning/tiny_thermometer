@@ -46,8 +46,8 @@ void send_Uart(unsigned char uart_data);
 void send_Uart_str(unsigned char *s);
 void send_int_Uart(unsigned int c);
 
-unsigned char USART_Receive( void );
-void USART_Transmit( unsigned char data );
+unsigned char usart_receive( void );
+void usart_transmit( unsigned char data );
 
 int main(void) {
 	
@@ -261,40 +261,40 @@ void print_error() {
 	lcdPuts("Err     ");
 }
 
-void USART_Init( unsigned int baudrate ) // USART Initialization
+void USART_Init( unsigned int baudrate ) /* USART Initialization */
 {
 	UBRRH = (unsigned char) (baudrate>>8);
 	UBRRL = (unsigned char) baudrate;
-	UCSRA = (1<<U2X); //Удвоение скорости
-	UCSRB = ( ( 1 << RXEN ) | ( 1 << TXEN ) ); // Confirm RX/TX USART
+	UCSRA = (1<<U2X); /* double speed */
+	UCSRB = ( ( 1 << RXEN ) | ( 1 << TXEN ) ); /* confirm RX/TX USART */
 	UCSRC = (1<<USBS) | (3<<UCSZ0);
 }
 
-void send_Uart_str(unsigned char *s) //	Send string;
+void send_Uart_str(unsigned char *s) /*	Send string */
 {
-	while (*s != 0) USART_Transmit(*s++);
+	while (*s != 0) usart_transmit(*s++);
 }
 
-void send_int_Uart(unsigned int c)   //	Send number from 0000 to 9999;
+void send_int_Uart(unsigned int c)   /*	Send number from 0000 to 9999 */
 {
 	unsigned char temp;
 	c=c%10000;
 	temp=c/100;
-	USART_Transmit(temp/10+'0');
-	USART_Transmit(temp%10+'0');
+	usart_transmit(temp/10+'0');
+	usart_transmit(temp%10+'0');
 	temp=c%100;
-	USART_Transmit(temp/10+'0');
-	USART_Transmit(temp%10+'0');
+	usart_transmit(temp/10+'0');
+	usart_transmit(temp%10+'0');
 }
 
-unsigned char USART_Receive( void ) //Функция приема данных
+unsigned char usart_receive( void ) /* receive data */
 {
-	while ( !(UCSRA & (1<<RXC)) ); 	//Ожидание приема символа
-	return UDR; //Возврат символа
+	while ( !(UCSRA & (1<<RXC)) ); 	/* waiting for char receiving */
+	return UDR; 
 }
 
-void USART_Transmit( unsigned char data ) //Функция отправки данных
+void usart_transmit( uint8_t data ) /* send data */
 {
-	while ( !(UCSRA & (1<<UDRE)) ); //Ожидание опустошения буфера приема
-	UDR = data; //Начало передачи данных
+	while ( !(UCSRA & (1<<UDRE)) ); /* waiting for buffer clear */
+	UDR = data; 
 }
