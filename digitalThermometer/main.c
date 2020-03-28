@@ -27,12 +27,12 @@
 #define ZERO_POINT 0
 #define START_DELAY 3000
 
-uint8_t c=0, lowByteRh, highByteRh, lowByteTemp, highByteTemp, checkSum;
-uint16_t temperatureResult, humidityResult;
+uint8_t c=0, low_byte_rh, high_byte_rh, low_byte_temp, high_byte_temp, check_sum;
+uint16_t temperature_result, humidity_result;
 const int NEGATIVE_POINT = -10;
 
 void init();
-void print_negative_temperature(char* tBuffer, int negativeTemp); /* print temperature lower than 0 C */
+void print_negative_temperature(char* t_buffer, int negative_temp); /* print temperature lower than 0 C */
 void print_humidity(char* buffer);								  /* print humidity */
 void print_temperature(char* buffer, uint16_t temp_after_point);  /* print temperature above than 0 C */
 void request();													  /* Microcontroller send start pulse/request */
@@ -81,27 +81,27 @@ int main(void) {
 		[3] Temp decimal
 		[4] checksum is the sum of all four bytes AND 255
 		*/
-		lowByteRh=receive_data();	/* store first eight bit in I_RH */
-		highByteRh=receive_data();	/* store next eight bit in D_RH */
-		lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
-		highByteTemp=receive_data();	/* store next eight bit in D_Temp */
-		checkSum=receive_data();/* store next eight bit in CheckSum */
+		low_byte_rh=receive_data();	/* store first eight bit in I_RH */
+		high_byte_rh=receive_data();	/* store next eight bit in D_RH */
+		low_byte_temp=receive_data();	/* store next eight bit in I_Temp */
+		high_byte_temp=receive_data();	/* store next eight bit in D_Temp */
+		check_sum=receive_data();/* store next eight bit in CheckSum */
 		
 		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
-		if ((get_checksum() & 255) != checkSum) {
+		if ((get_checksum() & 255) != check_sum) {
 			print_error();
 		}
 		else {
-			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+			humidity_result = (low_byte_rh * 256 + high_byte_rh ) / DOZEN;
 			print_humidity(h_buffer);
-			temperatureResult = (lowByteTemp * 256 + highByteTemp );
+			temperature_result = (low_byte_temp * 256 + high_byte_temp );
 			
-			if(temperatureResult > TEMP_MASK) {
-				negative_temp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+			if(temperature_result > TEMP_MASK) {
+				negative_temp = -(TEMP_MASK & temperature_result); /* shoud be devide by DOZEN */
 				print_negative_temperature(t_buffer, negative_temp);
 			}
 			else {
-				temp_buffer = temperatureResult;
+				temp_buffer = temperature_result;
 				temp_buffer_after_point = temp_buffer % DOZEN;
 				print_temperature(t_buffer, temp_buffer_after_point);
 			}
@@ -112,11 +112,11 @@ int main(void) {
 }
 
 void print_humidity(char* buffer) {
-	if(humidityResult < 100) {
+	if(humidity_result < 100) {
 		lcdGotoXY(0,0);
 		lcdPuts("H= ");
 		lcdGotoXY(0,3);
-		itoa(humidityResult, buffer, DOZEN);
+		itoa(humidity_result, buffer, DOZEN);
 		lcdPuts(buffer);
 		lcdGotoXY(0, 5);
 		lcdPuts("%");
@@ -125,7 +125,7 @@ void print_humidity(char* buffer) {
 		lcdGotoXY(0,0);
 		lcdPuts("H=");
 		lcdGotoXY(0,2);
-		itoa(humidityResult, buffer, DOZEN);
+		itoa(humidity_result, buffer, DOZEN);
 		lcdPuts(buffer);
 		lcdGotoXY(0, 5);
 		lcdPuts("%");
@@ -180,7 +180,7 @@ void print_negative_temperature(char* buffer, int negativeTemp) {
 
 void print_temperature(char* buffer, uint16_t temp_after_point)
 {
-	uint16_t temperatureData = temperatureResult / DOZEN;
+	uint16_t temperatureData = temperature_result / DOZEN;
 	
 	if(temperatureData != MAXIMUM_TEMP) {
 		
@@ -251,7 +251,7 @@ uint8_t receive_data() {
 
 int get_checksum() {
 	
-	return lowByteRh + highByteRh + lowByteTemp + highByteTemp;
+	return low_byte_rh + high_byte_rh + low_byte_temp + high_byte_temp;
 }
 
 void print_error() {
