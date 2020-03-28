@@ -65,11 +65,11 @@ int main(void) {
 	lcdClear();
 	lcdSetDisplay(LCD_DISPLAY_ON);
 	lcdSetCursor(LCD_CURSOR_OFF);
-	USART_Init(47); // 19200
+	//USART_Init(47); // 19200
 	
 	while (1) {
 
-      send_int_Uart(21);
+      //send_int_Uart(21);
 
 		request();		/* send start pulse */
 		response();		/* receive response */
