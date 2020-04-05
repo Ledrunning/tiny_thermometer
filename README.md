@@ -9,4 +9,6 @@
 * Program Memory Usage 	:	1684 bytes   82,2 % Full
 * Data Memory Usage 		:	72 bytes   56,3 % Full
 
+![](https://habrastorage.org/webt/wm/uf/z5/wmufz5xjcxuew-huxw3ny3s3f6g.jpeg)
+
 Project on Hackaday - https://hackaday.io/project/169856-tiny-thermometer
