@@ -2,6 +2,13 @@
 ## Description: 
 A simple temperature and humidity meter displaying values on an 8x2 LCD using a DHT-22 sensor with a 5V external power supply
 on a small Avr microcontroller Attiny 2313 with 2Kb program memory. The firmware is written in C language in Atmel Studio 7
+NOTICE: Construction for home use only
+
+Specifications:
+- Power supply: 5V 100mA via Mini Usb;
+- Temperature measure: 0 - 80 C real;
+- Temperature measure: 0 - (-40) C int;
+- Humidity measure: 0 - 100 % int;
 
 * The repository contains a project in Atmel Studio 7 with source code
 * Simulation project in Proteus 8
