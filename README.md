@@ -17,7 +17,7 @@ If you use an internal generator, remove C3, C4, and Y1 from the circuit
 R2 resistor needed to adjust the contrast of LCD
 The device soldered on the solder breadboard and put on KRADEX Z70 Housing case
 
-### NOTICE: Construction for home use only
+### NOTICE: Construction for home use only!
 
 * The repository contains a project in Atmel Studio 7 with source code
 * Simulation project in Proteus 8
