@@ -15,19 +15,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   5 .debug_aranges 00000110  00000000  00000000  00000798  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   0000225d  00000000  00000000  000008a8  2**0
+  6 .debug_info   0000225c  00000000  00000000  000008a8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 0000091b  00000000  00000000  00002b05  2**0
+  7 .debug_abbrev 00000903  00000000  00000000  00002b04  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000c1d  00000000  00000000  00003420  2**0
+  8 .debug_line   00000c1d  00000000  00000000  00003407  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000002dc  00000000  00000000  00004040  2**2
+  9 .debug_frame  000002dc  00000000  00000000  00004024  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000005bc  00000000  00000000  0000431c  2**0
+ 10 .debug_str    000005c7  00000000  00000000  00004300  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000013cd  00000000  00000000  000048d8  2**0
+ 11 .debug_loc    000013cd  00000000  00000000  000048c7  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000108  00000000  00000000  00005ca5  2**0
+ 12 .debug_ranges 00000108  00000000  00000000  00005c94  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -307,9 +307,9 @@ void print_humidity(char* buffer) {
  196:	cf 93       	push	r28
  198:	df 93       	push	r29
  19a:	ec 01       	movw	r28, r24
-	if(humidityResult < 100) {
- 19c:	80 91 a6 00 	lds	r24, 0x00A6	; 0x8000a6 <humidityResult>
- 1a0:	90 91 a7 00 	lds	r25, 0x00A7	; 0x8000a7 <humidityResult+0x1>
+	if(humidity_result < 100) {
+ 19c:	80 91 9f 00 	lds	r24, 0x009F	; 0x80009f <humidity_result>
+ 1a0:	90 91 a0 00 	lds	r25, 0x00A0	; 0x8000a0 <humidity_result+0x1>
  1a4:	84 36       	cpi	r24, 0x64	; 100
  1a6:	91 05       	cpc	r25, r1
  1a8:	d0 f4       	brcc	.+52     	; 0x1de <print_humidity+0x48>
@@ -325,12 +325,12 @@ void print_humidity(char* buffer) {
  1b6:	63 e0       	ldi	r22, 0x03	; 3
  1b8:	80 e0       	ldi	r24, 0x00	; 0
  1ba:	c8 df       	rcall	.-112    	; 0x14c <lcdGotoXY>
-		itoa(humidityResult, buffer, DOZEN);
+		itoa(humidity_result, buffer, DOZEN);
  1bc:	4a e0       	ldi	r20, 0x0A	; 10
  1be:	50 e0       	ldi	r21, 0x00	; 0
  1c0:	be 01       	movw	r22, r28
- 1c2:	80 91 a6 00 	lds	r24, 0x00A6	; 0x8000a6 <humidityResult>
- 1c6:	90 91 a7 00 	lds	r25, 0x00A7	; 0x8000a7 <humidityResult+0x1>
+ 1c2:	80 91 9f 00 	lds	r24, 0x009F	; 0x80009f <humidity_result>
+ 1c6:	90 91 a0 00 	lds	r25, 0x00A0	; 0x8000a0 <humidity_result+0x1>
  1ca:	06 d2       	rcall	.+1036   	; 0x5d8 <itoa>
 		lcdPuts(buffer);
  1cc:	ce 01       	movw	r24, r28
@@ -358,12 +358,12 @@ void print_humidity(char* buffer) {
  1ea:	62 e0       	ldi	r22, 0x02	; 2
  1ec:	80 e0       	ldi	r24, 0x00	; 0
  1ee:	ae df       	rcall	.-164    	; 0x14c <lcdGotoXY>
-		itoa(humidityResult, buffer, DOZEN);
+		itoa(humidity_result, buffer, DOZEN);
  1f0:	4a e0       	ldi	r20, 0x0A	; 10
  1f2:	50 e0       	ldi	r21, 0x00	; 0
  1f4:	be 01       	movw	r22, r28
- 1f6:	80 91 a6 00 	lds	r24, 0x00A6	; 0x8000a6 <humidityResult>
- 1fa:	90 91 a7 00 	lds	r25, 0x00A7	; 0x8000a7 <humidityResult+0x1>
+ 1f6:	80 91 9f 00 	lds	r24, 0x009F	; 0x80009f <humidity_result>
+ 1fa:	90 91 a0 00 	lds	r25, 0x00A0	; 0x8000a0 <humidity_result+0x1>
  1fe:	ec d1       	rcall	.+984    	; 0x5d8 <itoa>
 		lcdPuts(buffer);
  200:	ce 01       	movw	r24, r28
@@ -481,16 +481,16 @@ uint8_t receive_data() {
 
 int get_checksum() {
 	
-	return lowByteRh + highByteRh + lowByteTemp + highByteTemp;
- 272:	20 91 a0 00 	lds	r18, 0x00A0	; 0x8000a0 <lowByteRh>
- 276:	80 91 a4 00 	lds	r24, 0x00A4	; 0x8000a4 <highByteRh>
+	return low_byte_rh + high_byte_rh + low_byte_temp + high_byte_temp;
+ 272:	20 91 a1 00 	lds	r18, 0x00A1	; 0x8000a1 <low_byte_rh>
+ 276:	80 91 a4 00 	lds	r24, 0x00A4	; 0x8000a4 <high_byte_rh>
  27a:	90 e0       	ldi	r25, 0x00	; 0
  27c:	82 0f       	add	r24, r18
  27e:	91 1d       	adc	r25, r1
- 280:	20 91 9f 00 	lds	r18, 0x009F	; 0x80009f <lowByteTemp>
+ 280:	20 91 a7 00 	lds	r18, 0x00A7	; 0x8000a7 <low_byte_temp>
  284:	82 0f       	add	r24, r18
  286:	91 1d       	adc	r25, r1
- 288:	20 91 a3 00 	lds	r18, 0x00A3	; 0x8000a3 <highByteTemp>
+ 288:	20 91 a3 00 	lds	r18, 0x00A3	; 0x8000a3 <high_byte_temp>
 }
  28c:	82 0f       	add	r24, r18
  28e:	91 1d       	adc	r25, r1
@@ -712,9 +712,9 @@ void print_temperature(char* buffer, uint16_t temp_after_point)
  3bc:	df 93       	push	r29
  3be:	ec 01       	movw	r28, r24
  3c0:	7b 01       	movw	r14, r22
-	uint16_t temperatureData = temperatureResult / DOZEN;
- 3c2:	80 91 a1 00 	lds	r24, 0x00A1	; 0x8000a1 <temperatureResult>
- 3c6:	90 91 a2 00 	lds	r25, 0x00A2	; 0x8000a2 <temperatureResult+0x1>
+	uint16_t temperatureData = temperature_result / DOZEN;
+ 3c2:	80 91 a5 00 	lds	r24, 0x00A5	; 0x8000a5 <temperature_result>
+ 3c6:	90 91 a6 00 	lds	r25, 0x00A6	; 0x8000a6 <temperature_result+0x1>
  3ca:	6a e0       	ldi	r22, 0x0A	; 10
  3cc:	70 e0       	ldi	r23, 0x00	; 0
  3ce:	dd d0       	rcall	.+442    	; 0x58a <__udivmodhi4>
@@ -854,10 +854,10 @@ void print_temperature(char* buffer, uint16_t temp_after_point)
  492:	08 95       	ret
 
 00000494 <main>:
-void send_int_Uart(unsigned int c);
-
-unsigned char USART_Receive( void );
-void USART_Transmit( unsigned char data );
+void response();												  /* receive response from DHT11 */
+uint8_t receive_data();											  /* receive data */
+int get_checksum();
+void print_error();
 
 int main(void) {
  494:	cf 93       	push	r28
@@ -914,11 +914,11 @@ int main(void) {
  4d2:	80 e0       	ldi	r24, 0x00	; 0
  4d4:	1d de       	rcall	.-966    	; 0x110 <lcdSetCursor>
 		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
-		if ((get_checksum() & 255) != checkSum) {
+		if ((get_checksum() & 255) != check_sum) {
 			print_error();
 		}
 		else {
-			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
+			humidity_result = (low_byte_rh * 256 + high_byte_rh ) / DOZEN;
  4d6:	0f 2e       	mov	r0, r31
  4d8:	fa e0       	ldi	r31, 0x0A	; 10
  4da:	ef 2e       	mov	r14, r31
@@ -938,25 +938,25 @@ int main(void) {
 		[3] Temp decimal
 		[4] checksum is the sum of all four bytes AND 255
 		*/
-		lowByteRh=receive_data();	/* store first eight bit in I_RH */
+		low_byte_rh=receive_data();	/* store first eight bit in I_RH */
  4e4:	aa de       	rcall	.-684    	; 0x23a <receive_data>
- 4e6:	80 93 a0 00 	sts	0x00A0, r24	; 0x8000a0 <lowByteRh>
-		highByteRh=receive_data();	/* store next eight bit in D_RH */
+ 4e6:	80 93 a1 00 	sts	0x00A1, r24	; 0x8000a1 <low_byte_rh>
+		high_byte_rh=receive_data();	/* store next eight bit in D_RH */
  4ea:	a7 de       	rcall	.-690    	; 0x23a <receive_data>
- 4ec:	80 93 a4 00 	sts	0x00A4, r24	; 0x8000a4 <highByteRh>
-		lowByteTemp=receive_data();	/* store next eight bit in I_Temp */
+ 4ec:	80 93 a4 00 	sts	0x00A4, r24	; 0x8000a4 <high_byte_rh>
+		low_byte_temp=receive_data();	/* store next eight bit in I_Temp */
  4f0:	a4 de       	rcall	.-696    	; 0x23a <receive_data>
- 4f2:	80 93 9f 00 	sts	0x009F, r24	; 0x80009f <lowByteTemp>
-		highByteTemp=receive_data();	/* store next eight bit in D_Temp */
+ 4f2:	80 93 a7 00 	sts	0x00A7, r24	; 0x8000a7 <low_byte_temp>
+		high_byte_temp=receive_data();	/* store next eight bit in D_Temp */
  4f6:	a1 de       	rcall	.-702    	; 0x23a <receive_data>
- 4f8:	80 93 a3 00 	sts	0x00A3, r24	; 0x8000a3 <highByteTemp>
-		checkSum=receive_data();/* store next eight bit in CheckSum */
+ 4f8:	80 93 a3 00 	sts	0x00A3, r24	; 0x8000a3 <high_byte_temp>
+		check_sum=receive_data();/* store next eight bit in CheckSum */
  4fc:	9e de       	rcall	.-708    	; 0x23a <receive_data>
  4fe:	18 2f       	mov	r17, r24
- 500:	80 93 a5 00 	sts	0x00A5, r24	; 0x8000a5 <checkSum>
+ 500:	80 93 a2 00 	sts	0x00A2, r24	; 0x8000a2 <check_sum>
 		
 		/* (DHTdata[0] + DHTdata[1] + DHTdata[2] + DHTdata[3]) & 255) will = DHTdata[4] IF the checksum is good. */
-		if ((get_checksum() & 255) != checkSum) {
+		if ((get_checksum() & 255) != check_sum) {
  504:	b6 de       	rcall	.-660    	; 0x272 <get_checksum>
  506:	99 27       	eor	r25, r25
  508:	21 2f       	mov	r18, r17
@@ -969,37 +969,37 @@ int main(void) {
  514:	30 c0       	rjmp	.+96     	; 0x576 <main+0xe2>
 		}
 		else {
-			humidityResult = (lowByteRh * 256 + highByteRh ) / DOZEN;
- 516:	80 91 a0 00 	lds	r24, 0x00A0	; 0x8000a0 <lowByteRh>
+			humidity_result = (low_byte_rh * 256 + high_byte_rh ) / DOZEN;
+ 516:	80 91 a1 00 	lds	r24, 0x00A1	; 0x8000a1 <low_byte_rh>
  51a:	90 e0       	ldi	r25, 0x00	; 0
  51c:	98 2f       	mov	r25, r24
  51e:	88 27       	eor	r24, r24
- 520:	20 91 a4 00 	lds	r18, 0x00A4	; 0x8000a4 <highByteRh>
+ 520:	20 91 a4 00 	lds	r18, 0x00A4	; 0x8000a4 <high_byte_rh>
  524:	82 0f       	add	r24, r18
  526:	91 1d       	adc	r25, r1
  528:	b7 01       	movw	r22, r14
  52a:	43 d0       	rcall	.+134    	; 0x5b2 <__divmodhi4>
- 52c:	70 93 a7 00 	sts	0x00A7, r23	; 0x8000a7 <humidityResult+0x1>
- 530:	60 93 a6 00 	sts	0x00A6, r22	; 0x8000a6 <humidityResult>
+ 52c:	70 93 a0 00 	sts	0x00A0, r23	; 0x8000a0 <humidity_result+0x1>
+ 530:	60 93 9f 00 	sts	0x009F, r22	; 0x80009f <humidity_result>
 			print_humidity(h_buffer);
  534:	ce 01       	movw	r24, r28
  536:	04 96       	adiw	r24, 0x04	; 4
  538:	2e de       	rcall	.-932    	; 0x196 <print_humidity>
-			temperatureResult = (lowByteTemp * 256 + highByteTemp );
- 53a:	80 91 9f 00 	lds	r24, 0x009F	; 0x80009f <lowByteTemp>
+			temperature_result = (low_byte_temp * 256 + high_byte_temp );
+ 53a:	80 91 a7 00 	lds	r24, 0x00A7	; 0x8000a7 <low_byte_temp>
  53e:	90 e0       	ldi	r25, 0x00	; 0
  540:	98 2f       	mov	r25, r24
  542:	88 27       	eor	r24, r24
- 544:	20 91 a3 00 	lds	r18, 0x00A3	; 0x8000a3 <highByteTemp>
+ 544:	20 91 a3 00 	lds	r18, 0x00A3	; 0x8000a3 <high_byte_temp>
  548:	82 0f       	add	r24, r18
  54a:	91 1d       	adc	r25, r1
- 54c:	90 93 a2 00 	sts	0x00A2, r25	; 0x8000a2 <temperatureResult+0x1>
- 550:	80 93 a1 00 	sts	0x00A1, r24	; 0x8000a1 <temperatureResult>
+ 54c:	90 93 a6 00 	sts	0x00A6, r25	; 0x8000a6 <temperature_result+0x1>
+ 550:	80 93 a5 00 	sts	0x00A5, r24	; 0x8000a5 <temperature_result>
 			
-			if(temperatureResult > TEMP_MASK) {
+			if(temperature_result > TEMP_MASK) {
  554:	99 23       	and	r25, r25
  556:	4c f4       	brge	.+18     	; 0x56a <main+0xd6>
-				negative_temp = -(TEMP_MASK & temperatureResult); /* shoud be devide by DOZEN */
+				negative_temp = -(TEMP_MASK & temperature_result); /* shoud be devide by DOZEN */
 				print_negative_temperature(t_buffer, negative_temp);
  558:	9f 77       	andi	r25, 0x7F	; 127
  55a:	66 27       	eor	r22, r22
@@ -1012,7 +1012,7 @@ int main(void) {
  568:	06 c0       	rjmp	.+12     	; 0x576 <main+0xe2>
 			}
 			else {
-				temp_buffer = temperatureResult;
+				temp_buffer = temperature_result;
 				temp_buffer_after_point = temp_buffer % DOZEN;
 				print_temperature(t_buffer, temp_buffer_after_point);
  56a:	b7 01       	movw	r22, r14
