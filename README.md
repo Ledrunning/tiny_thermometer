@@ -27,4 +27,6 @@ The device soldered on the solder breadboard and put on KRADEX Z70 Housing case
 
 ![](https://habrastorage.org/webt/wm/uf/z5/wmufz5xjcxuew-huxw3ny3s3f6g.jpeg)
 
+![](sim.gif)
+
 Project on Hackaday - https://hackaday.io/project/169856-tiny-thermometer
