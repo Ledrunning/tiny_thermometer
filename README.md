@@ -1,9 +1,9 @@
 # Tiny thermometer
-## A simple temperature and humidity meter displaying values on an 8x2 LCD
-## On small Avr microcontroller Attiny 2313
-## Program written in C language in Atmel Studio 7
+## A simple temperature and humidity meter displaying values on an 8x2 LCD using a DHT-22 sensor with a 5V external power supply
+## On a small Avr microcontroller Attiny 2313 with 2Kb program memory
+## The firmware is written in C language in Atmel Studio 7
 
-* Repository contains a project in Atmel Studio 7 with source code 
+* The repository contains a project in Atmel Studio 7 with source code
 * Simulation project in Proteus 8
 
 * Program Memory Usage 	:	1684 bytes   82,2 % Full
